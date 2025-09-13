@@ -1,5 +1,8 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 import { listVehiclesFn } from "@/redux/slices/vehicles/listVehicles";
 import {
   updateVehiclesFn,
@@ -54,7 +57,6 @@ import { useNavigate } from "react-router-dom";
 
 const vehicleTypes = ["Hiace", "Noah", "Bus", "Taxi"];
 
-// --- Component ---
 const VehicleManagement: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { data, loading } = useSelector(
@@ -74,16 +76,26 @@ const VehicleManagement: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [drivers, setDrivers] = useState<Drivers[]>([]);
 
-  const [vehicleNo, setVehicleNo] = useState("");
-  const [type, setType] = useState<string>(vehicleTypes[0]);
-  const [driverId, setDriverId] = useState<string>(""); // Controlled select
-  const [errors, setErrors] = useState<{ vehicleNo?: string }>({});
+  const navigate = useNavigate();
+
+  // --- React Hook Form ---
+  const { handleSubmit, control, reset } = useForm<{
+    vehicleNo: string;
+    type: string;
+    driverId: string;
+  }>({
+    defaultValues: {
+      vehicleNo: "",
+      type: vehicleTypes[0],
+      driverId: "",
+    },
+  });
 
   // --- Fetch vehicles ---
   useEffect(() => {
     dispatch(listVehiclesFn({ page }));
   }, [dispatch, page, refreshTrigger]);
-  const navigate = useNavigate();
+
   // --- Fetch drivers ---
   useEffect(() => {
     const controller = new AbortController();
@@ -107,16 +119,18 @@ const VehicleManagement: React.FC = () => {
     return () => controller.abort();
   }, []);
 
-  // --- Populate editing form ---
+  // --- Populate form when editing ---
   useEffect(() => {
     if (editingVehicle) {
-      setVehicleNo(editingVehicle.vehicleNo);
-      setType(editingVehicle.name);
-      setDriverId(editingVehicle.driverId ?? "");
+      reset({
+        vehicleNo: editingVehicle.vehicleNo,
+        type: editingVehicle.name,
+        driverId: editingVehicle.driverId ?? "",
+      });
     }
-  }, [editingVehicle]);
+  }, [editingVehicle, reset]);
 
-  // --- Handle update notifications ---
+  // --- Update notifications ---
   useEffect(() => {
     if (updateState?.error) {
       toast.error(updateState.error, { id: "updateVehicle" });
@@ -182,28 +196,19 @@ const VehicleManagement: React.FC = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  // --- Form validation ---
-  const validateForm = () => {
-    const newErrors: { vehicleNo?: string } = {};
-    if (!vehicleNo.trim()) newErrors.vehicleNo = "Vehicle number is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // --- Form submission ---
+  const onSubmit = (values: {
+    vehicleNo: string;
+    type: string;
+    driverId: string;
+  }) => {
     if (!editingVehicle) return;
-    if (!validateForm()) return;
-
     const payload: iUpdatedVehiclePayload = {
       id: editingVehicle.id,
-      vehicleNo: vehicleNo.trim(),
-      name: type,
-      driverId: driverId,
+      vehicleNo: values.vehicleNo.trim(),
+      name: values.type,
+      driverId: values.driverId || undefined,
     };
-    if (driverId) payload.driverId = driverId;
-    if (editingVehicle.id) payload.id = editingVehicle.id;
-
     dispatch(updateVehiclesFn(payload));
   };
 
@@ -239,9 +244,7 @@ const VehicleManagement: React.FC = () => {
           <Button
             variant="default"
             size="sm"
-            onClick={() => {
-              navigate("/dashboard/admin/vehicle/new");
-            }}
+            onClick={() => navigate("/dashboard/admin/vehicle/new")}
           >
             <Plus className="mr-2 h-4 w-4" /> Add Vehicle
           </Button>
@@ -388,67 +391,88 @@ const VehicleManagement: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Add / Edit Modal */}
+      {/* Update Modal */}
       {editingVehicle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             className="bg-white dark:bg-slate-800 p-6 rounded-md w-full max-w-md shadow-lg"
           >
-            <h2 className="text-xl font-bold mb-4">
-              {editingVehicle.id ? "Edit Vehicle" : "Add Vehicle"}
-            </h2>
+            <h2 className="text-xl font-bold mb-4">Edit Vehicle</h2>
 
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="vehicleNo">Vehicle No</Label>
-              <Input
-                id="vehicleNo"
-                value={vehicleNo}
-                onChange={(e) => setVehicleNo(e.target.value)}
-                className={errors.vehicleNo ? "border-red-500" : ""}
-                placeholder="Enter vehicle number"
-              />
-              {errors.vehicleNo && (
-                <p className="text-red-500 text-sm">{errors.vehicleNo}</p>
-              )}
-
-              <Label htmlFor="vehicleType">Vehicle Type</Label>
-              <Select value={type} onValueChange={(val) => setType(val)}>
-                <SelectTrigger id="vehicleType">
-                  <SelectValue placeholder="Select vehicle type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicleTypes.map((vType) => (
-                    <SelectItem key={vType} value={vType}>
-                      {vType}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Label htmlFor="driver">Assign Driver</Label>
-              <Select
-                value={driverId}
-                onValueChange={(val) => setDriverId(val)}
-              >
-                <SelectTrigger id="driver">
-                  <SelectValue placeholder="Select driver" />
-                </SelectTrigger>
-                <SelectContent>
-                  {drivers.length === 0 ? (
-                    <div className="p-2">No drivers available</div>
-                  ) : (
-                    drivers.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>
-                        {d.name}
-                      </SelectItem>
-                    ))
+            <div className="flex flex-col gap-4">
+              {/* Vehicle No */}
+              <div>
+                <Label htmlFor="vehicleNo">Vehicle Number</Label>
+                <Controller
+                  name="vehicleNo"
+                  control={control}
+                  rules={{ required: "Vehicle number is required" }}
+                  render={({ field, fieldState }) => (
+                    <>
+                      <Input
+                        {...field}
+                        placeholder="Enter vehicle number"
+                        className={fieldState.error ? "border-red-500" : ""}
+                      />
+                      {fieldState.error && (
+                        <p className="text-red-500 text-sm">
+                          {fieldState.error.message}
+                        </p>
+                      )}
+                    </>
                   )}
-                </SelectContent>
-              </Select>
+                />
+              </div>
+
+              {/* Vehicle Type */}
+              <div>
+                <Label htmlFor="type">Vehicle Type</Label>
+                <Controller
+                  name="type"
+                  control={control}
+                  render={({ field }) => (
+                    <Select {...field}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select vehicle type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {vehicleTypes.map((v) => (
+                          <SelectItem key={v} value={v}>
+                            {v}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+
+              {/* Driver */}
+              <div>
+                <Label htmlFor="driverId">Driver</Label>
+                <Controller
+                  name="driverId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select {...field}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select driver" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {drivers.map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.name} ({d.email})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="flex justify-end gap-2 mt-4">
+            <div className="flex justify-end gap-2 mt-6">
               <Button
                 type="button"
                 variant="outline"

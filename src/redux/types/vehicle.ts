@@ -19,6 +19,7 @@ export interface Vehicle {
 }
 
 export interface Drivers {
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -54,6 +55,7 @@ export interface Vehicle {
 }
 
 export interface Drivers {
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -78,6 +80,7 @@ export interface Vehicle {
 }
 
 export interface Drivers {
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -110,6 +113,7 @@ export interface Vehicle {
 }
 
 export interface Drivers {
+  id: string;
   name: string;
   email: string;
   phone: string;

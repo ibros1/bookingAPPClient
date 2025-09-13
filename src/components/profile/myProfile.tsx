@@ -1,11 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
 import { Button } from "../ui/button";
 
 import { resetLoginState } from "@/redux/slices/users/auth/login";
 import type { RootState } from "@/redux/store";
-import defaultProfile from "../../../public/defaultImg.png";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import { Book, Home, LogOut, MapPin, Settings } from "lucide-react";
+import type { JSX } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,8 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Home, MapPin, Book, Settings, LogOut } from "lucide-react";
-import type { JSX } from "react";
 
 interface ProfileLink {
   linkTitle: string;
@@ -31,37 +30,28 @@ const AuthSection = () => {
   const user = loginState.data?.user;
   const isLoggedIn = Boolean(user);
 
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate("/login");
+    }
+  }, [isLoggedIn, navigate]);
+
   const logoutHandler = () => {
     dispatch(resetLoginState());
     localStorage.removeItem("user_data");
-    cookieStore.delete("auth_token");
-    location.reload();
+    document.cookie =
+      "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    window.location.reload();
   };
 
-  if (!isLoggedIn) {
-    return (
-      <div className="flex gap-3 items-center">
-        <Link
-          to="/login"
-          className="px-5 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:border-blue-600 hover:text-blue-600 transition dark:border-gray-700 dark:text-gray-200 dark:hover:border-blue-500 dark:hover:text-blue-400"
-        >
-          Login
-        </Link>
-        <Link
-          to="/signup"
-          className="hidden lg:inline-block px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold shadow hover:bg-blue-700 transition"
-        >
-          Sign Up
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return null;
 
-  const fullName = user?.name;
-  const profilePhoto = user.profilePhoto ? user.profilePhoto : defaultProfile;
+  const fullName = user.name;
+  const profilePhoto = user.profilePhoto || "/defaultImg.png";
 
   const links: ProfileLink[] = [
-    ...(user?.role === "ADMIN"
+    ...(user.role === "ADMIN"
       ? [
           {
             linkTitle: "Dashboard",
@@ -70,7 +60,6 @@ const AuthSection = () => {
           },
         ]
       : []),
-
     {
       linkTitle: "Routes",
       to: "/routes",
@@ -81,7 +70,6 @@ const AuthSection = () => {
       to: "/bookings",
       icon: <Book className="w-4 h-4" />,
     },
-
     {
       linkTitle: "Settings",
       to: "/my-settings",
@@ -103,23 +91,12 @@ const AuthSection = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-3 px-3 py-1 rounded-full hover:shadow-lg transition cursor-pointer bg-gray-50 dark:bg-[#020618] ring-1 ring-gray-200 dark:ring-gray-700">
-          <Avatar className="w-10 h-10">
-            {profilePhoto ? (
-              <AvatarImage
-                src={profilePhoto}
-                alt="Profile"
-                className="w-full"
-              />
-            ) : (
-              <AvatarImage
-                src={defaultProfile}
-                alt="Profile"
-                className="shadow-xl rounded-full w-full"
-              />
-            )}
-
-            {/* <AvatarFallback>{defaultProfile}</AvatarFallback> */}
-          </Avatar>
+          <img
+            src={profilePhoto}
+            alt="Profile"
+            referrerPolicy="no-referrer"
+            className="w-10 h-10 object-cover rounded-full"
+          />
           <span className="hidden md:inline font-medium text-gray-900 dark:text-gray-100 truncate">
             {fullName}
           </span>
@@ -135,15 +112,18 @@ const AuthSection = () => {
           className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-[#11132b] transition cursor-pointer"
           onClick={() => navigate("/my-profile")}
         >
-          <Avatar className="w-12 h-12 ring-2 ring-blue-500">
-            <img src={profilePhoto} alt="Profile" />
-          </Avatar>
+          <img
+            src={profilePhoto}
+            alt="Profile"
+            referrerPolicy="no-referrer"
+            className="w-12 h-12 rounded-full ring-2 ring-blue-500 object-cover"
+          />
           <div className="truncate">
             <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
               {fullName}
             </h4>
             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              {user?.email}
+              {user.email}
             </p>
           </div>
         </div>

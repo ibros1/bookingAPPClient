@@ -4,7 +4,7 @@ import AdminNotFound from "./components/Admin404";
 import NotFoundPage from "./components/NotFoundPage";
 import AdminDashboard from "./pages/admin/pages/adminDashboard";
 import AdminRouter from "./pages/admin/pages/adminRouter";
-import CreateVehicle from "./pages/admin/pages/vehicles/createVehicle";
+
 import VehicleManagement from "./pages/admin/pages/vehicles/listVehicle";
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
@@ -13,6 +13,7 @@ import MainRoute from "./pages/mainRoute";
 import Rides from "./pages/rides";
 import AuthRoute from "./routes/AuthRoute";
 import ProtectedRoute from "./routes/protectedRoute";
+import CreateVehicle from "./pages/admin/pages/vehicles/createVehicle";
 
 export const router = createBrowserRouter([
   {

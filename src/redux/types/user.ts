@@ -9,8 +9,8 @@ export interface User {
   name: string;
   email: string;
   googleId: null;
-  profilePhoto: null;
-  phone: null;
+  profilePhoto: string;
+  phone: string;
   role: string;
   isVerified: boolean;
   isActive: boolean;
@@ -39,8 +39,8 @@ export interface User {
   name: string;
   email: string;
   googleId: null;
-  profilePhoto: null;
-  phone: null;
+  profilePhoto: string;
+  phone: string;
   role: string;
   isVerified: boolean;
   isActive: boolean;
@@ -53,4 +53,27 @@ export interface iCreatedUserPayload {
   password: string;
   confirmPassword: string;
   isActive: true;
+}
+
+//list users
+export interface iListAllUsers {
+  isSuccess: boolean;
+  message: string;
+  users: User[];
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  googleId: null;
+  profilePhoto: string;
+  phone: string;
+  role: string;
+  isVerified: boolean;
+  isActive: boolean;
+  isDriver: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  vehicleId: null;
 }
