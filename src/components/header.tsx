@@ -10,9 +10,9 @@ import { ChangeToggle } from "./ui/theme";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const userState = useSelector((state: RootState) => state.loginSlice);
-  const user = userState?.data;
-  const navigate = useNavigate();
+  // const userState = useSelector((state: RootState) => state.WhoAmiSlice);
+  // const user = userState?.data;
+  // const navigate = useNavigate();
   const navLinks = [
     { to: "/", label: "Home", icon: Home },
     { to: "/routes", label: "Routes", icon: Bus },
@@ -22,11 +22,7 @@ const Header = () => {
   ];
 
   const mobileNavRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
-  }, [navigate, user]);
+
   // Close mobile nav when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,7 +42,7 @@ const Header = () => {
   }, [isOpen]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900 dark:text-white backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors">
+    <header className="sticky top-0 z-50 bg-white/90 dark:bg-gray-900 dark:text-white backdrop-blur-md  border-b border-gray-200 dark:border-gray-700 transition-colors">
       <div className="mx-auto  px-6 py-2 flex items-center justify-between">
         {/* Left: Logo + Mobile Menu */}
         <div className="flex items-center gap-4">

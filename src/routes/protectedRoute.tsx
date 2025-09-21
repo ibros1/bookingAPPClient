@@ -1,9 +1,16 @@
+import LoadingPages from "@/components/loading";
+import type { RootState } from "@/redux/store";
+import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  const user = localStorage.getItem("user_data");
+  const { data, loading } = useSelector(
+    (state: RootState) => state.WhoAmiSlice
+  );
 
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  if (loading) return <LoadingPages message="Checking your access..." />;
+
+  return data?.user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

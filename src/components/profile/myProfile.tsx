@@ -1,12 +1,14 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
-import { useEffect } from "react";
 import { Button } from "../ui/button";
 
 import { resetLoginState } from "@/redux/slices/users/auth/login";
-import type { RootState } from "@/redux/store";
+import { type AppDispatch, type RootState } from "@/redux/store";
+import Cookies from "js-cookie";
 import { Book, Home, LogOut, MapPin, Settings } from "lucide-react";
 import type { JSX } from "react";
+import LoadingPages from "../loading";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { logOutUserFn } from "@/redux/slices/users/auth/logout";
 
 interface ProfileLink {
   linkTitle: string;
@@ -23,8 +26,8 @@ interface ProfileLink {
 }
 
 const AuthSection = () => {
-  const loginState = useSelector((state: RootState) => state.loginSlice);
-  const dispatch = useDispatch();
+  const loginState = useSelector((state: RootState) => state.WhoAmiSlice);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const user = loginState.data?.user;
@@ -35,17 +38,25 @@ const AuthSection = () => {
     if (!isLoggedIn) {
       navigate("/login");
     }
-  }, [isLoggedIn, navigate]);
-
-  const logoutHandler = () => {
-    dispatch(resetLoginState());
-    localStorage.removeItem("user_data");
-    document.cookie =
-      "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    window.location.reload();
-  };
+  }, [isLoggedIn, navigate, dispatch]);
 
   if (!user) return null;
+  if (loginState.loading)
+    return <LoadingPages message="Checking your access..." />;
+
+  const logoutHandler = async () => {
+    try {
+      await dispatch(logOutUserFn()).unwrap(); // ensures action completes
+      dispatch(resetLoginState());
+      localStorage.removeItem("user_data");
+      Cookies.remove("auth_token");
+      Cookies.remove("refresh_token");
+      navigate("/login");
+      location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   const fullName = user.name;
   const profilePhoto = user.profilePhoto || "/defaultImg.png";
@@ -90,16 +101,16 @@ const AuthSection = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="flex items-center gap-3 px-3 py-1 rounded-full hover:shadow-lg transition cursor-pointer bg-gray-50 dark:bg-[#020618] ring-1 ring-gray-200 dark:ring-gray-700">
+        <div className="flex items-center gap-3 px-2 hover:shadow-md transition duration-700 rounded-md cursor-pointer  dark:bg-[#020618]  dark:ring-gray-700">
+          <span className="hidden md:inline font-medium text-gray-900 dark:text-gray-100 truncate">
+            {fullName}
+          </span>
           <img
             src={profilePhoto}
             alt="Profile"
             referrerPolicy="no-referrer"
             className="w-10 h-10 object-cover rounded-full"
           />
-          <span className="hidden md:inline font-medium text-gray-900 dark:text-gray-100 truncate">
-            {fullName}
-          </span>
         </div>
       </DropdownMenuTrigger>
 

@@ -32,6 +32,7 @@ export interface Drivers {
 // list vehicles
 export interface iListedVehiclesPayload {
   page: number;
+  perPage: number;
 }
 
 export interface iListedVehiclesResponse {

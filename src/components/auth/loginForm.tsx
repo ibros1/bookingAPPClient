@@ -23,6 +23,7 @@ import type { AppDispatch, RootState } from "@/redux/store";
 import { ChangeToggle } from "../ui/theme";
 import { BASE_API_URL } from "@/constants/base_url";
 import { DEFAULT_ERROR_MESSAGE } from "@/constants/default error";
+import { WhoAmiFn } from "@/redux/slices/users/whoami";
 
 const LoginForm: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -103,15 +104,18 @@ const LoginForm: React.FC = () => {
 
   // --- Toasts & navigation based on login state ---
   useEffect(() => {
-    // Only show error toast if there's an error
-    if (logInState.error) {
+    // Only show toast once per login attempt
+    if (logInState.loading) return;
+
+    // Show error toast if exists
+    if (logInState.error && !hasShownSuccess) {
       toast.dismiss();
       toast.error(logInState.error || DEFAULT_ERROR_MESSAGE);
-      setHasShownSuccess(false);
+      setHasShownSuccess(true);
       return;
     }
 
-    // Check if login was successful and we haven't shown success yet
+    // Show success toast if login succeeded
     if (logInState.data?.isSuccess && !hasShownSuccess) {
       const displayName = logInState.data.user?.name || "";
       toast.dismiss();
@@ -120,15 +124,18 @@ const LoginForm: React.FC = () => {
       );
       setHasShownSuccess(true);
 
-      // Save user data to localStorage
+      // Fetch user info after successful login
+      dispatch(WhoAmiFn());
+
+      // Save to localStorage
       if (logInState.data.user) {
-        localStorage.setItem("user", JSON.stringify(logInState.data.user));
+        localStorage.setItem("user_data", JSON.stringify(logInState.data.user));
       }
 
       const redirectTo = (searchParams.get("redirect") as string) || "/";
       navigate(redirectTo);
     }
-  }, [logInState, navigate, searchParams, hasShownSuccess]);
+  }, [logInState, dispatch, navigate, searchParams, hasShownSuccess]);
 
   // --- Handle Google OAuth callback from URL ---
   useEffect(() => {

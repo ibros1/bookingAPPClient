@@ -13,14 +13,10 @@ const initialState = {
 
 export const WhoAmiFn = createAsyncThunk(
   "/users/getme",
-  async (__, { rejectWithValue, getState }) => {
+  async (__, { rejectWithValue }) => {
     try {
-      const appState = getState() as RootState;
-      const token = appState.loginSlice.data?.token;
       const response = await axios.get(`${BASE_API_URL}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        withCredentials: true, // <-- move it out of headers
       });
 
       return response.data;

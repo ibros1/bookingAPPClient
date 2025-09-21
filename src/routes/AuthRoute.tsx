@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const AuthRoute = () => {
-  const user = useSelector((state: RootState) => state.loginSlice.data?.user);
+  const user = useSelector((state: RootState) => state.WhoAmiSlice.data?.user);
   const location = useLocation();
 
   if (user) return <Navigate to="/" replace />;

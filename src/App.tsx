@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
-import { useEffect, useState } from "react";
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // handle dark mode
   useEffect(() => {
     const root = window.document.documentElement;
     if (isDarkMode) {
@@ -14,6 +16,7 @@ const App = () => {
       localStorage.setItem("dark", "false");
     }
   }, [isDarkMode]);
+
   useEffect(() => {
     const saved = localStorage.getItem("dark");
     if (saved === "true") setIsDarkMode(true);

@@ -1,21 +1,26 @@
-import { BASE_API_URL } from "@/constants/base_url";
-import { DEFAULT_ERROR_MESSAGE } from "@/constants/default error";
-import type { iListAllUsers } from "@/redux/types/user";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import axios, { AxiosError } from "axios";
+import { BASE_API_URL } from "../../../constants/base_url";
+
+import { DEFAULT_ERROR_MESSAGE } from "@/constants/default error";
+import type { iListedRouteResponse } from "@/redux/types/routes";
 
 const initialState = {
-  data: {} as iListAllUsers,
+  data: {} as iListedRouteResponse,
   loading: false,
   error: "",
 };
 
-export const listUsersFn = createAsyncThunk(
-  "/users/list",
+export const listRoutesFn = createAsyncThunk(
+  "/routes/list",
   async (__, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BASE_API_URL}/users/all/`);
+      const response = await axios.get(`${BASE_API_URL}/routes`, {
+        headers: {
+          withCredentials: true,
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -29,44 +34,44 @@ export const listUsersFn = createAsyncThunk(
   }
 );
 
-export const listUsersSlice = createSlice({
-  name: "List users Slice",
+export const listRoutesSlice = createSlice({
+  name: "List Routes Slice",
   initialState,
   reducers: {
-    createUserRedu: (state, action) => {
+    createRouteRedu: (state, action) => {
       state.data = action.payload;
       state.loading = false;
       state.error = "";
     },
-    updateUserRedu: (state, action) => {
+    updateRouteRedu: (state, action) => {
       state.data = action.payload;
       state.loading = false;
       state.error = "";
     },
-    deleteUserRdu: (state, action) => {
+    deleteRouteRdu: (state, action) => {
       state.data = action.payload;
       state.loading = false;
       state.error = "";
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(listUsersFn.pending, (state) => {
+    builder.addCase(listRoutesFn.pending, (state) => {
       state.loading = true;
-      state.data = {} as iListAllUsers;
+      state.data = {} as iListedRouteResponse;
       state.error = "";
     });
-    builder.addCase(listUsersFn.fulfilled, (state, action) => {
+    builder.addCase(listRoutesFn.fulfilled, (state, action) => {
       state.loading = false;
       state.data = action.payload;
       state.error = "";
     });
-    builder.addCase(listUsersFn.rejected, (state, action) => {
-      state.data = {} as iListAllUsers;
+    builder.addCase(listRoutesFn.rejected, (state, action) => {
+      state.data = {} as iListedRouteResponse;
       state.loading = false;
       state.error = action.payload as string;
     });
   },
 });
 
-export const { createUserRedu, updateUserRedu, deleteUserRdu } =
-  listUsersSlice.actions;
+export const { createRouteRedu, updateRouteRedu, deleteRouteRdu } =
+  listRoutesSlice.actions;
