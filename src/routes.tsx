@@ -24,6 +24,7 @@ import RoutesPage from "./pages/routes/routes";
 import GetRidesByRoute from "./pages/rides/GetRidesByRoute";
 import GetOneRide from "./pages/rides/getOneRide";
 import AdminProtected from "./routes/adminProtected";
+import AllUsers from "./pages/admin/users/allUsers";
 
 export const router = createBrowserRouter([
   {
@@ -56,24 +57,24 @@ export const router = createBrowserRouter([
   },
 
   {
-    element: <AdminProtected />, // <--- wrapper for admin routes
+    path: "/dashboard/admin/",
+    element: (
+      <AdminProtected>
+        <AdminRouter />
+      </AdminProtected>
+    ),
     children: [
-      {
-        path: "/dashboard/admin/",
-        element: <AdminRouter />,
-        children: [
-          { index: true, element: <AdminDashboard /> },
-          { path: "vehicles", element: <VehicleManagement /> },
-          { path: "vehicle/new", element: <CreateVehicle /> },
-          { path: "drivers", element: <ListAllUsers /> },
-          { path: "drivers/new", element: <AddDriver /> },
-          { path: "routes", element: <AllRoutes /> },
-          { path: "routes/create", element: <CreateRoute /> },
-          { path: "rides", element: <ListRides /> },
-          { path: "rides/create", element: <CreateRide /> },
-          { path: "*", element: <AdminNotFound /> },
-        ],
-      },
+      { index: true, element: <AdminDashboard /> },
+      { path: "drivers", element: <ListAllUsers /> },
+      { path: "users", element: <AllUsers /> },
+      { path: "vehicles", element: <VehicleManagement /> },
+      { path: "vehicle/new", element: <CreateVehicle /> },
+      { path: "drivers/new", element: <AddDriver /> },
+      { path: "routes", element: <AllRoutes /> },
+      { path: "routes/create", element: <CreateRoute /> },
+      { path: "rides", element: <ListRides /> },
+      { path: "rides/create", element: <CreateRide /> },
+      { path: "*", element: <AdminNotFound /> },
     ],
   },
 ]);

@@ -4,9 +4,7 @@ import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
 const ProtectedRoute = () => {
-  const { data, loading } = useSelector(
-    (state: RootState) => state.WhoAmiSlice
-  );
+  const { data, loading } = useSelector((state: RootState) => state.loginSlice);
 
   if (loading) return <LoadingPages message="Checking your access..." />;
 

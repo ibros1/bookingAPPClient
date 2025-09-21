@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "./redux/store";
+import { WhoAmiFn } from "./redux/slices/users/whoami";
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(WhoAmiFn());
+  }, [dispatch]);
 
   // handle dark mode
   useEffect(() => {

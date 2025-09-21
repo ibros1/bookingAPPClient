@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import axios from "axios";
 import { BASE_API_URL } from "@/constants/base_url";
+import { createAxiosClient } from "@/redux/api/axiosClients";
 
 interface AuthState {
   accessToken: string | null;
@@ -24,7 +25,7 @@ export const refreshTokenFn = createAsyncThunk(
   "auth/refresh",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.post(
+      const res = await createAxiosClient.post(
         `${BASE_API_URL}/auth/refresh`,
         {},
         { withCredentials: true } // send refresh cookie

@@ -140,4 +140,4 @@ export const loginSlice = createSlice({
 });
 
 export const { resetLoginState } = loginSlice.actions;
-export default loginSlice.reducer;
+export default loginSlice;

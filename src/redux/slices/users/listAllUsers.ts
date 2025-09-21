@@ -5,17 +5,29 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import axios, { AxiosError } from "axios";
 
-const initialState = {
+interface IListUsersState {
+  data: iListAllUsers;
+  loading: boolean;
+  error: string;
+}
+
+const initialState: IListUsersState = {
   data: {} as iListAllUsers,
   loading: false,
   error: "",
 };
 
+// Accept page and size as payload
 export const listUsersFn = createAsyncThunk(
   "/users/list",
-  async (__, { rejectWithValue }) => {
+  async (
+    { page = 1, size = 10 }: { page?: number; size?: number },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axios.get(`${BASE_API_URL}/users/all/`);
+      const response = await axios.get(
+        `${BASE_API_URL}/users/all?page=${page}&size=${size}`
+      );
 
       return response.data;
     } catch (error) {
@@ -70,3 +82,5 @@ export const listUsersSlice = createSlice({
 
 export const { createUserRedu, updateUserRedu, deleteUserRdu } =
   listUsersSlice.actions;
+
+export default listUsersSlice.reducer;

@@ -23,7 +23,7 @@ const AdminRouter = () => {
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
             lg:translate-x-0 lg:flex`}
         >
-          <SideBar closeSidebar={() => setSidebarOpen(false)} />
+          <SideBar isOpen closeSidebar={() => setSidebarOpen(false)} />
         </aside>
 
         {/* Main content */}

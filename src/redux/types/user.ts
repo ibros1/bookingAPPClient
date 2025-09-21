@@ -77,3 +77,8 @@ export interface User {
   updatedAt: Date;
   vehicleId: null;
 }
+
+export interface iLogoutUserResponse {
+  isSuccess: true;
+  message: string;
+}

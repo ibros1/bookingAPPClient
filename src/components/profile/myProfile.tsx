@@ -26,7 +26,7 @@ interface ProfileLink {
 }
 
 const AuthSection = () => {
-  const loginState = useSelector((state: RootState) => state.WhoAmiSlice);
+  const loginState = useSelector((state: RootState) => state.loginSlice);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 

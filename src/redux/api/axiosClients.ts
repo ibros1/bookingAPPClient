@@ -1,33 +1,36 @@
+// src/utils/axiosClient.ts
 import axios, { AxiosError } from "axios";
 import { BASE_API_URL } from "@/constants/base_url";
-import { refreshTokenFn } from "../slices/users/auth/refreshToken";
 
-const axiosClient = axios.create({
-  baseURL: BASE_API_URL,
-  withCredentials: true, // sends cookies automatically
-});
+export const createAxiosClient = (
+  refreshFn: () => Promise<void>, // refresh token function
+  logoutFn: () => void // logout function
+) => {
+  const client = axios.create({
+    baseURL: BASE_API_URL,
+    withCredentials: true,
+  });
 
-// Response interceptor for 401 → refresh token
-axiosClient.interceptors.response.use(
-  (response) => response,
-  async (error: AxiosError & { config?: any }) => {
-    const originalRequest = error.config;
+  client.interceptors.response.use(
+    (res) => res,
+    async (error: AxiosError & { config?: any }) => {
+      const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
 
-      try {
-        // Try refreshing token via backend
-        await refreshTokenFn(); // backend sets new auth_token cookie
-        return axiosClient(originalRequest); // retry original request
-      } catch (refreshError) {
-        // Refresh failed → user needs to login
-        return Promise.reject(refreshError);
+        try {
+          await refreshFn();
+          return client(originalRequest);
+        } catch (err) {
+          logoutFn();
+          return Promise.reject(err);
+        }
       }
+
+      return Promise.reject(error);
     }
+  );
 
-    return Promise.reject(error);
-  }
-);
-
-export default axiosClient;
+  return client;
+};

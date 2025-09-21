@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { loginSlice } from "./slices/users/auth/login";
+
 import { registerSlice } from "./slices/users/auth/register";
 import { listVehiclesSlice } from "./slices/vehicles/listVehicles";
 import { createVehicleSlice } from "./slices/vehicles/vehicle";
@@ -18,6 +18,7 @@ import { createBookingsSlice } from "./slices/bookings/createBookings";
 import { WhoAmiSlice } from "./slices/users/whoami";
 import { logoutUserSlice } from "./slices/users/auth/logout";
 import authSlice from "./slices/users/auth/refreshToken";
+import loginSlice from "./slices/users/auth/login";
 
 export const store = configureStore({
   reducer: {

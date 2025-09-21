@@ -1,8 +1,6 @@
-import type { RootState } from "@/redux/store";
 import { Book, Bus, Home, Info, MapPin, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 import AuthSection from "./profile/myProfile";
 import Search from "./search";
@@ -10,9 +8,7 @@ import { ChangeToggle } from "./ui/theme";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  // const userState = useSelector((state: RootState) => state.WhoAmiSlice);
-  // const user = userState?.data;
-  // const navigate = useNavigate();
+
   const navLinks = [
     { to: "/", label: "Home", icon: Home },
     { to: "/routes", label: "Routes", icon: Bus },
