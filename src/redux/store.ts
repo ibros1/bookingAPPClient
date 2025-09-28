@@ -1,57 +1,55 @@
 import { configureStore } from "@reduxjs/toolkit";
-
 import { registerSlice } from "./slices/users/auth/register";
-import { listVehiclesSlice } from "./slices/vehicles/listVehicles";
-import { createVehicleSlice } from "./slices/vehicles/vehicle";
-import { updateVehicleSlice } from "./slices/vehicles/updateVehicle";
-import { listUsersSlice } from "./slices/users/listAllUsers";
-import { listDriversSlice } from "./slices/users/access/drivers";
-import { registerDriverSlice } from "./slices/drivers/createDriver";
-import { createRoutesSlice } from "./slices/routes/createRoutes";
-import { listRoutesSlice } from "./slices/routes/listAllRoutes";
-import { createridesSlice } from "./slices/rides/createRide";
-import { listRidesSlice } from "./slices/rides/listRides";
-import { getOneBookingByRideSlice } from "./slices/bookings/getOneBookingByRide";
-import { getRidesByRouteSlice } from "./slices/rides/getRidesByRoute";
-import { getOneRidesSlice } from "./slices/rides/getOneRide";
-import { createBookingsSlice } from "./slices/bookings/createBookings";
-import { WhoAmiSlice } from "./slices/users/whoami";
-import { logoutUserSlice } from "./slices/users/auth/logout";
-import authSlice from "./slices/users/auth/refreshToken";
-import loginSlice from "./slices/users/auth/login";
+import { loginSlice } from "./slices/users/auth/login";
+import { WhoAmiSlice } from "./slices/users/auth/me";
+import { createRoutesSlice } from "./slices/routes/createRoute";
+import { listRoutesSlice } from "./slices/routes/listRoutes";
+import { UpdateRoutesSlice } from "./slices/routes/updateRoutes";
+import { getOneRoutesSlice } from "./slices/routes/getOneRoutes";
+import { DeleteRoutesSlice } from "./slices/routes/deleteRoutes";
+import { createAddressSlice } from "./slices/address/createAddress";
+import { listAddressSlice } from "./slices/address/listAddress";
+import { UpdateAddresssSlice } from "./slices/address/updateAddress";
+import { getOneAddressSlice } from "./slices/address/getOneAddress";
+import { DeleteAddressSlice } from "./slices/address/deleteAddress";
+import { listofficersSlice } from "./slices/officers/listOfficer";
+import { createHotelsSlice } from "./slices/hotels/createHotel";
+import { listHotelsSlice } from "./slices/hotels/listHotels";
+import { DeleteHotelsSlice } from "./slices/hotels/deleteHotel";
+import { getOneHotelsSlice } from "./slices/hotels/getOneHotel";
+import { getHotelsByAddressSlice } from "./slices/hotels/getHotelsByaddress";
+import { UpdateHotelsSlice } from "./slices/hotels/updateHotel";
+import { listBookersSlice } from "./slices/bookers/listBookers";
 
 export const store = configureStore({
   reducer: {
     loginSlice: loginSlice.reducer,
     registerSlice: registerSlice.reducer,
-    listUsersSlice: listUsersSlice.reducer,
     WhoAmiSlice: WhoAmiSlice.reducer,
-    logoutUserSlice: logoutUserSlice.reducer,
-    authSlice: authSlice.reducer,
-    // accesss roles
-    listDriversSlice: listDriversSlice.reducer,
-
-    // vehicles
-    listVehiclesSlice: listVehiclesSlice.reducer,
-    createVehicleSlice: createVehicleSlice.reducer,
-    updateVehicleSlice: updateVehicleSlice.reducer,
-
-    // drivers
-    registerDriverSlice: registerDriverSlice.reducer,
+    listofficersSlice: listofficersSlice.reducer,
+    listBookersSlice: listBookersSlice.reducer,
 
     // routes
     createRoutesSlice: createRoutesSlice.reducer,
     listRoutesSlice: listRoutesSlice.reducer,
+    UpdateRoutesSlice: UpdateRoutesSlice.reducer,
+    getOneRoutesSlice: getOneRoutesSlice.reducer,
+    DeleteRoutesSlice: DeleteRoutesSlice.reducer,
 
-    // rides
-    createridesSlice: createridesSlice.reducer,
-    listRidesSlice: listRidesSlice.reducer,
-    getOneRidesSlice: getOneRidesSlice.reducer,
-    getOneBookingByRideSlice: getOneBookingByRideSlice.reducer,
-    getRidesByRouteSlice: getRidesByRouteSlice.reducer,
+    // address
+    createAddressSlice: createAddressSlice.reducer,
+    listAddressSlice: listAddressSlice.reducer,
+    UpdateAddresssSlice: UpdateAddresssSlice.reducer,
+    getOneAddressSlice: getOneAddressSlice.reducer,
+    DeleteAddressSlice: DeleteAddressSlice.reducer,
 
-    // bookings
-    createBookingsSlice: createBookingsSlice.reducer,
+    //hotels
+    createHotelsSlice: createHotelsSlice.reducer,
+    listHotelsSlice: listHotelsSlice.reducer,
+    DeleteHotelsSlice: DeleteHotelsSlice.reducer,
+    getOneHotelsSlice: getOneHotelsSlice.reducer,
+    getHotelsByAddressSlice: getHotelsByAddressSlice.reducer,
+    UpdateHotelsSlice: UpdateHotelsSlice.reducer,
   },
 });
 

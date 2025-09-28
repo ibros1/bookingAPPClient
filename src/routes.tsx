@@ -1,80 +1,75 @@
-// router.tsx
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AdminNotFound from "./components/Admin404";
-import NotFoundPage from "./components/NotFoundPage";
-import AdminDashboard from "./pages/admin/pages/adminDashboard";
-import AdminRouter from "./pages/admin/pages/adminRouter";
 
-import VehicleManagement from "./pages/admin/pages/vehicles/listVehicle";
+import AdminRouter from "./pages/admin/routes/adminRouter";
+
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
-import HomePage from "./pages/home/homePage";
-import MainRoute from "./pages/mainRoute";
-import Rides from "./pages/rides";
-import AuthRoute from "./routes/AuthRoute";
-import ProtectedRoute from "./routes/protectedRoute";
-import CreateVehicle from "./pages/admin/pages/vehicles/createVehicle";
-import ListAllUsers from "./pages/admin/pages/drivers/allDrivers";
-import AddDriver from "./pages/admin/pages/drivers/addDriver";
-import AllRoutes from "./pages/admin/pages/routes/allRoutes";
-import CreateRoute from "./pages/admin/pages/routes/createRoute";
-import ListRides from "./pages/admin/pages/rides/listRides";
-import CreateRide from "./pages/admin/pages/rides/createRide";
-import RoutesPage from "./pages/routes/routes";
-import GetRidesByRoute from "./pages/rides/GetRidesByRoute";
-import GetOneRide from "./pages/rides/getOneRide";
-import AdminProtected from "./routes/adminProtected";
-import AllUsers from "./pages/admin/users/allUsers";
+import AllRoutes from "./pages/admin/pages/adminRoutes/listAdminRoute";
+import CreateRoute from "./pages/admin/pages/adminRoutes/createRoutes";
+import AllAddresses from "./pages/admin/pages/adminAddress.tsx/listAdminAddress";
+import ProtectedAdminRoute from "./pages/admin/routes/protectedAdmin";
+import CreateAddress from "./pages/admin/pages/adminAddress.tsx/createAddresa";
+import AdminDashboard from "./pages/admin/pages/adminstrationComponent/adminDashboard";
+import ListHotels from "./pages/admin/pages/adminhotels.tsx/listHotel";
+import CreateHotel from "./pages/admin/pages/adminhotels.tsx/createHotel";
+
+const authRoutes = {
+  path: "/auth",
+  children: [
+    { path: "login", element: <Login /> },
+    { path: "register", element: <Register /> },
+    { path: "*", element: <Navigate to="/auth/login" replace /> },
+  ],
+};
+
+const adminRoutes = {
+  path: "/dashboard/admin",
+  element: (
+    <ProtectedAdminRoute>
+      <AdminRouter />
+    </ProtectedAdminRoute>
+  ), // always render layout
+  children: [
+    {
+      index: true,
+
+      element: <AdminDashboard />,
+    },
+    {
+      path: "routes",
+      element: <AllRoutes />,
+    },
+    {
+      path: "routes/create",
+      element: <CreateRoute />,
+    },
+    {
+      path: "addresses",
+      element: <AllAddresses />,
+    },
+    {
+      path: "addresses/create",
+      element: <CreateAddress />,
+    },
+    {
+      path: "hotels",
+      element: <ListHotels />,
+    },
+    {
+      path: "hotels/create",
+      element: <CreateHotel />,
+    },
+    {
+      path: "*",
+      element: <AdminNotFound />,
+    },
+  ],
+};
 
 export const router = createBrowserRouter([
-  {
-    element: <AuthRoute />,
-    children: [
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
-      { path: "/login/*", element: <Navigate to="/login" replace /> },
-      { path: "/register/*", element: <Navigate to="/login" replace /> },
-    ],
-  },
-  {
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: "/",
-        element: <MainRoute />,
-        children: [
-          { index: true, element: <HomePage /> },
-          { path: "rides", element: <Rides /> },
-          { path: "routes", element: <RoutesPage /> },
-          { path: "bookings", element: <p>Bookings</p> },
-          { path: "routes/:routeId/rides", element: <GetRidesByRoute /> },
-          { path: "routes/schedules/:rideId", element: <GetOneRide /> },
-          { path: "profile", element: <p>Profile</p> },
-          { path: "*", element: <NotFoundPage /> },
-        ],
-      },
-    ],
-  },
+  authRoutes,
+  adminRoutes,
 
-  {
-    path: "/dashboard/admin/",
-    element: (
-      <AdminProtected>
-        <AdminRouter />
-      </AdminProtected>
-    ),
-    children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: "drivers", element: <ListAllUsers /> },
-      { path: "users", element: <AllUsers /> },
-      { path: "vehicles", element: <VehicleManagement /> },
-      { path: "vehicle/new", element: <CreateVehicle /> },
-      { path: "drivers/new", element: <AddDriver /> },
-      { path: "routes", element: <AllRoutes /> },
-      { path: "routes/create", element: <CreateRoute /> },
-      { path: "rides", element: <ListRides /> },
-      { path: "rides/create", element: <CreateRide /> },
-      { path: "*", element: <AdminNotFound /> },
-    ],
-  },
+  { path: "*", element: <Navigate to="/auth/login" replace /> },
 ]);

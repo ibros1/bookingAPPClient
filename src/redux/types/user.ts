@@ -1,45 +1,75 @@
+export interface iCreatedUserPayload {
+  name: string;
+  phone: string;
+  password: string;
+  address: string;
+  confirmPassword: string;
+}
+export interface iCreatedUserResponse {
+  isSuccess: boolean;
+  message: string;
+  newUser: NewUser;
+}
+
+export interface NewUser {
+  id: string;
+  name: string;
+  email: null;
+  profilePhoto: null;
+  address: string;
+  phone: string;
+  password: string;
+  role: string;
+  isVerified: boolean;
+  isActive: boolean;
+  refreshToken: null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface iLoginUserResponse {
   isSuccess: boolean;
   message: string;
   user: User;
+  token: string;
 }
 
 export interface User {
   id: string;
   name: string;
-  email: string;
-  googleId: null;
-  profilePhoto: string;
+  email: null;
+  profilePhoto: null;
+  address: string;
   phone: string;
   role: string;
   isVerified: boolean;
   isActive: boolean;
+  refreshToken: null;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface iLoginUserPayload {
-  email: string;
+  phone: string;
   password: string;
 }
-export interface ILoginUserGoogleResponse extends User {
-  token?: string;
-  refreshToken?: string;
-}
 
-// register
-export interface iCreatedUserResponse {
+export interface iListOfiicersResponse {
   isSuccess: boolean;
   message: string;
-  user: User;
+  officers: Officer[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
 }
 
-export interface User {
+export interface Officer {
   id: string;
   name: string;
-  email: string;
-  googleId: null;
-  profilePhoto: string;
+  email: null;
+  profilePhoto: null;
+  address: string;
   phone: string;
   role: string;
   isVerified: boolean;
@@ -48,37 +78,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export interface iCreatedUserPayload {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  isActive: true;
-}
-
-//list users
-export interface iListAllUsers {
-  isSuccess: boolean;
-  message: string;
-  users: User[];
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  googleId: null;
-  profilePhoto: string;
-  phone: string;
-  role: string;
-  isVerified: boolean;
-  isActive: boolean;
-  isDriver: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  vehicleId: null;
-}
-
-export interface iLogoutUserResponse {
-  isSuccess: true;
-  message: string;
+export interface iListedOfficersPayload {
+  page: number;
+  perPage: number;
 }

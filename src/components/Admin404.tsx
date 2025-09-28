@@ -21,7 +21,7 @@ const AdminNotFound = () => {
           Go to Dashboard
         </Link>
         <Link
-          to="/"
+          to="/dashboard/admin"
           className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
         >
           Go Home

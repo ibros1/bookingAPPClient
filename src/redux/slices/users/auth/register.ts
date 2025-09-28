@@ -15,15 +15,18 @@ const initialState = {
 };
 
 export const registerUserFn = createAsyncThunk(
-  "auth/register",
+  "/auth/register",
   async (data: iCreatedUserPayload, { rejectWithValue }) => {
+    console.log("Sending payload:", data); // <- check here
     try {
-      const res = await axios.post(`${BASE_API_URL}/users/create`, data);
-      return res.data;
+      const response = await axios.post(`${BASE_API_URL}/users/create`, data);
+      console.log("API response:", response.data);
+      return response.data;
     } catch (error) {
+      console.error(error);
       if (error instanceof AxiosError) {
         return rejectWithValue(
-          error.response?.data?.message || DEFAULT_ERROR_MESSAGE
+          error.response?.data.message || DEFAULT_ERROR_MESSAGE
         );
       }
       return rejectWithValue(DEFAULT_ERROR_MESSAGE);
@@ -32,7 +35,7 @@ export const registerUserFn = createAsyncThunk(
 );
 
 export const registerSlice = createSlice({
-  name: "register",
+  name: "registerSlice",
   initialState,
   reducers: {
     resetRegisterState: (state) => {
@@ -40,28 +43,24 @@ export const registerSlice = createSlice({
       state.loading = false;
       state.error = "";
     },
-    clearError: (state) => {
-      state.error = "";
-    },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(registerUserFn.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
-      .addCase(registerUserFn.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-        state.error = "";
-      })
-      .addCase(registerUserFn.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-        state.data = {} as iCreatedUserResponse;
-      });
+    builder.addCase(registerUserFn.pending, (state) => {
+      state.loading = true;
+      state.data = {} as iCreatedUserResponse;
+      state.error = "";
+    });
+    builder.addCase(registerUserFn.fulfilled, (state, action) => {
+      state.loading = false;
+      state.data = action.payload;
+      state.error = "";
+    });
+    builder.addCase(registerUserFn.rejected, (state, action) => {
+      state.data = {} as iCreatedUserResponse;
+      state.loading = false;
+      state.error = action.payload as string;
+    });
   },
 });
 
-export const { resetRegisterState, clearError } = registerSlice.actions;
-export default registerSlice.reducer;
+export const { resetRegisterState } = registerSlice.actions;
