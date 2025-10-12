@@ -8,18 +8,25 @@ import {
   ClipboardCheck,
   ClipboardList,
   CreditCard,
-  DollarSign,
-  FileText,
   Home,
   Landmark,
+  ListIcon,
   Map,
   MapPin,
+  PlaySquareIcon,
   PlusCircle,
   PlusSquare,
   Receipt,
   Shield,
   User,
   Users,
+  List,
+  UserPlus,
+  FileText,
+  DollarSign,
+  CheckSquare,
+  BarChart2,
+  WorkflowIcon,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -27,7 +34,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 
-// ✅ Icon map
+// Map of icon names to components
 const IconMap: Record<string, React.ElementType> = {
   Home,
   User,
@@ -42,18 +49,24 @@ const IconMap: Record<string, React.ElementType> = {
   CalendarDays,
   CalendarPlus,
   ClipboardList,
+  ListIcon,
+  PlaySquareIcon,
   ClipboardCheck,
   CreditCard,
   DollarSign,
   Receipt,
   Activity,
   Building,
+  List,
+  UserPlus,
+  CheckSquare,
+  BarChart2,
+  WorkflowIcon,
   Landmark,
 };
 
-// ✅ Sidebar menu structure with role access
+// Sidebar navigation items
 const navItems = [
-  // ------------------- ADMIN -------------------
   {
     title: "Dashboard",
     icon: "Home",
@@ -62,7 +75,6 @@ const navItems = [
       {
         title: "Home",
         link: "/dashboard/admin",
-        icon: "Home",
         roles: ["ADMIN", "OFFICER", "BOOKER"],
       },
     ],
@@ -75,44 +87,43 @@ const navItems = [
       {
         title: "All Users",
         link: "/dashboard/admin/users",
-        icon: "Users",
         roles: ["ADMIN"],
       },
       {
         title: "Create User",
         link: "/dashboard/admin/users/create",
-        icon: "User",
         roles: ["ADMIN"],
       },
       {
         title: "Roles & Permissions",
         link: "/dashboard/admin/users/roles",
-        icon: "Shield",
         roles: ["ADMIN"],
       },
     ],
   },
   {
-    title: "Bookings",
+    title: "Bookings & Rides",
     icon: "ClipboardList",
     roles: ["ADMIN", "OFFICER", "BOOKER"],
     children: [
       {
         title: "All Bookings",
         link: "/dashboard/admin/bookings",
-        icon: "ClipboardList",
         roles: ["ADMIN", "OFFICER"],
       },
       {
         title: "Create Booking",
         link: "/dashboard/admin/bookings/create",
-        icon: "PlusSquare",
         roles: ["ADMIN", "BOOKER"],
+      },
+      {
+        title: "All Rides",
+        link: "/dashboard/admin/rides",
+        roles: ["ADMIN"],
       },
       {
         title: "My Bookings",
         link: "/dashboard/admin/booker/my-bookings",
-        icon: "ClipboardCheck",
         roles: ["BOOKER"],
       },
     ],
@@ -125,39 +136,22 @@ const navItems = [
       {
         title: "All Routes",
         link: "/dashboard/admin/routes",
-        icon: "Map",
         roles: ["ADMIN"],
       },
       {
         title: "Add Route",
         link: "/dashboard/admin/routes/create",
-        icon: "PlusCircle",
         roles: ["ADMIN"],
       },
       {
         title: "Addresses",
         link: "/dashboard/admin/addresses",
-        icon: "MapPin",
         roles: ["ADMIN", "OFFICER"],
       },
       {
         title: "Add Address",
         link: "/dashboard/admin/addresses/create",
-        icon: "PlusCircle",
         roles: ["ADMIN"],
-      },
-    ],
-  },
-  {
-    title: "Reports",
-    icon: "BarChart3",
-    roles: ["BOOKER"],
-    children: [
-      {
-        title: "Booking Reports",
-        link: "/dashboard/admin/reports/booker/bookings",
-        icon: "FileText",
-        roles: ["BOOKER"],
       },
     ],
   },
@@ -169,20 +163,65 @@ const navItems = [
       {
         title: "All Hotels",
         link: "/dashboard/admin/hotels",
-        icon: "Building",
         roles: ["ADMIN", "OFFICER"],
       },
       {
         title: "Create Hotel",
         link: "/dashboard/admin/hotels/create",
-        icon: "PlusSquare",
         roles: ["ADMIN", "OFFICER"],
       },
-
       {
         title: "Hotel Reports",
         link: "/dashboard/admin/hotels/report",
-        icon: "FileText",
+        roles: ["ADMIN", "OFFICER"],
+      },
+    ],
+  },
+  {
+    title: "Employees",
+    icon: "Users",
+    roles: ["ADMIN"],
+    children: [
+      {
+        title: "All Employees",
+        link: "/dashboard/admin/employees",
+        roles: ["ADMIN", "OFFICER"],
+      },
+      {
+        title: "Create Employee",
+        link: "/dashboard/admin/employees/create",
+        roles: ["ADMIN", "OFFICER"],
+      },
+      {
+        title: "Employee Reports",
+        link: "/dashboard/admin/employees/report",
+        roles: ["ADMIN", "OFFICER"],
+      },
+      {
+        title: "Employee Salaries",
+        link: "/dashboard/admin/employees/salaries",
+        roles: ["ADMIN", "OFFICER"],
+      },
+      {
+        title: "Employee Attendance",
+        link: "/dashboard/admin/employees/attendance",
+        roles: ["ADMIN", "OFFICER"],
+      },
+    ],
+  },
+  {
+    title: "Messages",
+    icon: "Activity",
+    roles: ["ADMIN", "OFFICER"],
+    children: [
+      {
+        title: "All Messages",
+        link: "/dashboard/admin/messages",
+        roles: ["ADMIN", "OFFICER"],
+      },
+      {
+        title: "Create Message",
+        link: "/dashboard/admin/messages/create",
         roles: ["ADMIN", "OFFICER"],
       },
     ],
@@ -190,18 +229,16 @@ const navItems = [
   {
     title: "Reports",
     icon: "BarChart3",
-    roles: ["ADMIN", "OFFICER"],
+    roles: ["ADMIN", "OFFICER", "BOOKER"],
     children: [
       {
         title: "Booking Reports",
         link: "/dashboard/admin/reports/bookings",
-        icon: "FileText",
-        roles: ["ADMIN", "OFFICER"],
+        roles: ["ADMIN", "OFFICER", "BOOKER"],
       },
       {
         title: "Invoice Reports",
         link: "/dashboard/admin/reports/invoices",
-        icon: "Receipt",
         roles: ["ADMIN"],
       },
     ],
@@ -214,13 +251,10 @@ const navItems = [
       {
         title: "Logs",
         link: "/dashboard/admin/logs",
-        icon: "Activity",
         roles: ["ADMIN"],
       },
     ],
   },
-
-  // ------------------- OFFICER -------------------
   {
     title: "Bookers",
     icon: "Users",
@@ -229,17 +263,13 @@ const navItems = [
       {
         title: "Bookers by Address",
         link: "/dashboard/admin/officer/bookers",
-        icon: "Users",
         roles: ["OFFICER"],
       },
     ],
   },
 ];
 
-type SideBarProps = {
-  isOpen: boolean;
-  closeSidebar: () => void;
-};
+type SideBarProps = { isOpen: boolean; closeSidebar: () => void };
 
 const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
   const location = useLocation();
@@ -250,6 +280,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     (state: RootState) => state.loginSlice.data?.user.role
   ) as string;
 
+  // Highlight menu based on route
   useEffect(() => {
     const active = navItems.find((item) =>
       item.children?.some((sub) => sub.link === location.pathname)
@@ -257,6 +288,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     if (active) setOpenMenu(active.title);
   }, [location.pathname]);
 
+  // Lock body scroll on mobile
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => {
@@ -264,41 +296,40 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     };
   }, [isOpen]);
 
-  const toggleMenu = (title: string) => {
+  const toggleMenu = (title: string) =>
     setOpenMenu((prev) => (prev === title ? null : title));
-  };
 
   return (
     <>
-      {/* Overlay */}
+      {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 z-40 lg:hidden ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 lg:hidden ${
+          isOpen ? "opacity-100 visible w-screen" : "opacity-0 invisible"
         }`}
         onClick={closeSidebar}
       />
 
       {/* Sidebar */}
-      <div
-        className={`fixed top-0 lg:top-[41px] lg:pt-0 lg:mt-4 left-0 h-full w-64 bg-white dark:bg-[#0a1126] dark:border-r border-gray-500 dark:border-gray-700 z-50 transform transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+      <aside
+        className={`fixed top-0 left-0 z-50 h-screen w-full bg-gradient-to-b from-[#0f132e] to-[#0a1126] text-gray-200 border-r border-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
+  ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        {/* Header with close button (mobile only) */}
-        <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 lg:hidden">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+        {/* Header */}
+        <div className="flex justify-center items-center p-5 border-b border-gray-800">
+          <h2 className="text-xl  font-bold text-white tracking-wide">
             📋 Booking App
           </h2>
           <button
             onClick={closeSidebar}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 rounded-md hover:bg-gray-700 lg:hidden transition"
           >
-            <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            <X className="w-5 h-5 text-gray-300" />
           </button>
         </div>
 
-        {/* Menu items */}
-        <div className="p-4 overflow-y-auto h-[calc(100%-60px)]">
-          <ul className="space-y-3">
+        {/* Menu */}
+        <nav className="p-3 overflow-y-auto h-[calc(100%-68px)]">
+          <ul className="space-y-2">
             {navItems
               .filter((item) => item.roles.includes(userRole))
               .map((item, i) => {
@@ -307,35 +338,31 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
 
                 return (
                   <li key={i}>
+                    <span className="h-6"></span>
                     <button
                       onClick={() =>
                         item.children ? toggleMenu(item.title) : closeSidebar()
                       }
-                      className={`flex justify-between items-center w-full px-3 py-2 text-sm rounded-md ${
+                      className={`flex justify-between mt-4 items-center w-full px-4 py-2  rounded-lg transition-all duration-300 ${
                         isOpenMenu
-                          ? "text-gray-900 dark:text-gray-100 font-semibold"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-medium"
+                          ? "bg-gray-100 text-gray-800 font-semibold shadow-inner"
+                          : "text-gray-300 hover:bg-gray-800 hover:text-white"
                       }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <ParentIcon
-                          className={`w-4 h-4 ${
-                            isOpenMenu
-                              ? "text-green-600 dark:text-green-400"
-                              : "text-gray-500 dark:text-gray-400"
-                          }`}
-                        />
+                      <span className="flex items-center gap-3">
+                        <ParentIcon className="w-5 h-5 text-gray-400" />
                         {item.title}
                       </span>
                       {item.children && (
                         <ChevronDown
-                          className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform ${
-                            isOpenMenu ? "rotate-180" : ""
+                          className={`w-5 h-5 text-gray-400 transition-transform ${
+                            isOpenMenu ? "rotate-180 text-green-400" : ""
                           }`}
                         />
                       )}
                     </button>
 
+                    {/* Submenu */}
                     {item.children && (
                       <div
                         ref={(el) => (submenuRefs.current[item.title] = el)}
@@ -345,29 +372,27 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                                 submenuRefs.current[item.title]?.scrollHeight
                               }px`
                             : "0px",
-                          transition: "max-height 0.35s ease-in-out",
+                          transition: "max-height 0.4s ease-in-out",
                         }}
-                        className="ml-4 mt-1 border-l border-gray-200 dark:border-gray-700 pl-2 overflow-hidden"
+                        className="mx-4 my-4 mt-1 border-l border-gray-700 pl-3 overflow-hidden"
                       >
-                        <ul className="space-y-1">
+                        <ul className="space-y-1 my-2">
                           {item.children
                             .filter((sub) => sub.roles.includes(userRole))
                             .map((sub, j) => {
-                              const SubIcon = IconMap[sub.icon] || Home;
                               const isActive = location.pathname === sub.link;
                               return (
                                 <li key={j}>
                                   <Link
                                     to={sub.link}
                                     onClick={closeSidebar}
-                                    className={`flex items-center gap-2 px-3 py-2 rounded-md ${
+                                    className={`flex items-center px-4 py-2 rounded-md text-sm transition-colors ${
                                       isActive
-                                        ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-400 font-semibold"
-                                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                        ? "bg-gray-800 text-green-400 font-medium"
+                                        : "text-gray-400 hover:bg-gray-800 hover:text-white"
                                     }`}
                                   >
-                                    <SubIcon className="w-4 h-4" />
-                                    <span className="text-xs">{sub.title}</span>
+                                    {sub.title}
                                   </Link>
                                 </li>
                               );
@@ -379,8 +404,8 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                 );
               })}
           </ul>
-        </div>
-      </div>
+        </nav>
+      </aside>
     </>
   );
 };

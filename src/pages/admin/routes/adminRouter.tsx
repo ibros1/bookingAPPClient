@@ -28,7 +28,7 @@ const AdminRouter = () => {
 
   if (userState.loading) return <LoadingPages />;
 
-  // Check role
+  // role validation
   if (!user || !allowedRoles.includes(user.role)) {
     return (
       <UnablePage message="You do not have permission. Please contact the admin." />
@@ -36,30 +36,32 @@ const AdminRouter = () => {
   }
 
   return (
-    <div className="  flex h-screen text-black dark:text-white transition-colors duration-300">
+    <div className="flex h-screen text-black dark:text-white transition-colors duration-300">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 w-64 h-full bg-white dark:bg-gray-800 shadow-sm transform transition-transform
+        className={`fixed top-0 left-0  w-80 h-screen bg-white dark:bg-gray-800 shadow-sm transform transition-transform
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-        lg:translate-x-0 lg:flex`}
+        lg:translate-x-0 lg:flex z-50`}
       >
-        <SideBar isOpen closeSidebar={() => setSidebarOpen(false)} />
+        <SideBar
+          isOpen={sidebarOpen}
+          closeSidebar={() => setSidebarOpen(false)}
+        />
       </aside>
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col ml-0 lg:ml-64">
+      <div className="flex-1 flex flex-col ml-0 lg:ml-80">
         {/* Header */}
-        <header className="w-full fixed top-0 left-0 z-50">
+        <header className="w-full pl-0 lg:pl-80 lg:z-50 lg:fixed  top-0 left-0">
           <AdminHeader toggleSidebar={toggleSidebar} />
         </header>
 
         {/* Scrollable content */}
-        <main className="flex-1 pt-14 w-screen lg:w-full">
+        <main className="flex-1 lg:pt-16 w-screen  lg:w-full">
           <div className="min-h-screen">
             <Outlet />
           </div>
-          {/* Footer */}
-          <footer className="w-full ">
+          <footer className="w-full">
             <Footer />
           </footer>
         </main>

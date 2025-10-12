@@ -48,8 +48,8 @@ const Login = () => {
     validationSchema: yup.object({
       phone: yup
         .string()
-        .min(10, "Phone must be 10 digits like: 06xxxxxxxx")
-        .max(10, "Phone must be 10 digits like: 06xxxxxxxx")
+        .min(12, "Phone must be 12 digits like: 2526xxxxxxxx")
+        .max(12, "Phone must be 12 digits like: 2526xxxxxxxx")
         .required("Phone number is required"),
       password: yup
         .string()

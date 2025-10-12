@@ -28,7 +28,7 @@ import {
   RefreshCw,
   Trash2,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
@@ -54,8 +54,8 @@ const AllRoutes: React.FC = () => {
   const [page, setPage] = useState(1);
   const perPage = 10;
   const [search, setSearch] = useState("");
-  const [sortColumn, ] = useState<keyof Route>("from");
-  const [sortOrder, ] = useState<"asc" | "desc">("asc");
+  const [sortColumn] = useState<keyof Route>("from");
+  const [sortOrder] = useState<"asc" | "desc">("asc");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editingRoute, setEditingRoute] = useState<Route | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);

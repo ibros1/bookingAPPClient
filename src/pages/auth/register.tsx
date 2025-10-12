@@ -62,7 +62,7 @@ const Register = () => {
         .required(),
       phone: yup
         .string()
-        .length(10, "Phone number must be 10 digits (06xxxxxxxx)")
+        .length(12, "Phone number must be 12 digits (2526xxxxxxxx)")
         .required(),
       address: yup.string().required(),
       password: yup.string().min(6, "At least 6 characters").required(),
@@ -118,21 +118,6 @@ const Register = () => {
           )}
         </div>
 
-        <div className="grid">
-          <Input
-            name="address"
-            placeholder="address"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.address}
-          />
-          {formik.touched.address && formik.errors.address && (
-            <p className="text-red-500 text-sm py-1 font-bold">
-              {formik.errors.address}
-            </p>
-          )}
-        </div>
-
         <div className="password grid">
           <Input
             type="password"
@@ -166,7 +151,13 @@ const Register = () => {
         </div>
 
         <div className="register">
-          <Button type="submit">register</Button>
+          <Button
+            type="submit"
+            disabled={registerState.loading || !formik.isValid}
+          >
+            {" "}
+            {registerState.loading ? "Registering..." : "Register"}{" "}
+          </Button>
         </div>
         {/* Divider */}
         <div className="flex items-center gap-2 text-gray-400 text-sm my-2">

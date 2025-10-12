@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -48,7 +48,7 @@ const CreateHotel: React.FC = () => {
 
   const addresses = addressesData?.address || [];
   const bookers = bookersData?.bookers || [];
-  const user = useSelector((state: RootState) => state.loginSlice.data?.user);
+  // const user = useSelector((state: RootState) => state.loginSlice.data?.user);
 
   useEffect(() => {
     dispatch(listAddressFn({ page: 1, perPage: 100 }));

@@ -20,7 +20,7 @@ export const getOneRoutesFn = createAsyncThunk(
     const appState = getState() as RootState;
     const token = appState.loginSlice.data?.token;
     try {
-      const response = await axios.get(`${BASE_API_URL}/routes/:${routeId}`, {
+      const response = await axios.get(`${BASE_API_URL}/routes/${routeId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

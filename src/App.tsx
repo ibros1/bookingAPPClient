@@ -3,7 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./routes";
 
 const App = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode] = useState(false);
 
   // handle dark mode
   useEffect(() => {

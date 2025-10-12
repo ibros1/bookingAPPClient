@@ -20,6 +20,26 @@ import { getOneHotelsSlice } from "./slices/hotels/getOneHotel";
 import { getHotelsByAddressSlice } from "./slices/hotels/getHotelsByaddress";
 import { UpdateHotelsSlice } from "./slices/hotels/updateHotel";
 import { listBookersSlice } from "./slices/bookers/listBookers";
+import { listBookingsSlice } from "./slices/bookings/listBookings";
+import { createBookingsSlice } from "./slices/bookings/createBooking";
+import { createRidesSlice } from "./slices/rides/createRides";
+import { listRidesSlice } from "./slices/rides/listRidesSlice";
+import { getOneRidesSlice } from "./slices/rides/getOneRides";
+import { UpdateRidesSlice } from "./slices/rides/updateRides";
+import { DeleteRidesSlice } from "./slices/rides/deleteRides";
+import { createEmployeesSlice } from "./slices/emplooyee/createEmployee";
+import { listEmployeesSlice } from "./slices/emplooyee/listEmplooyee";
+import { getOneEmployeesSlice } from "./slices/emplooyee/getOneEmployee";
+
+import { getOneEmployeeByPhoneSlice } from "./slices/emplooyee/getOneByPhone";
+import { UpdateEmployeesSlice } from "./slices/emplooyee/updateEmployee";
+import { DeleteEmployeesSlice } from "./slices/emplooyee/deleteEmployee";
+import { createMessagesSlice } from "./slices/messages/sendMessage";
+import { listMessagesSlice } from "./slices/messages/listMessages";
+import { getOneMessageSlice } from "./slices/messages/getOneMessage";
+import { listLogsSlice } from "./slices/logs/listActivity";
+import { listUsersSlice } from "./slices/users/getAllUsers";
+import { updateRoleSlice } from "./slices/users/updateRole";
 
 export const store = configureStore({
   reducer: {
@@ -28,6 +48,8 @@ export const store = configureStore({
     WhoAmiSlice: WhoAmiSlice.reducer,
     listofficersSlice: listofficersSlice.reducer,
     listBookersSlice: listBookersSlice.reducer,
+    listUsersSlice: listUsersSlice.reducer,
+    updateRoleSlice: updateRoleSlice.reducer,
 
     // routes
     createRoutesSlice: createRoutesSlice.reducer,
@@ -50,6 +72,33 @@ export const store = configureStore({
     getOneHotelsSlice: getOneHotelsSlice.reducer,
     getHotelsByAddressSlice: getHotelsByAddressSlice.reducer,
     UpdateHotelsSlice: UpdateHotelsSlice.reducer,
+
+    // rides
+    createRidesSlice: createRidesSlice.reducer,
+    listRidesSlice: listRidesSlice.reducer,
+    getOneRidesSlice: getOneRidesSlice.reducer,
+    UpdateRidesSlice: UpdateRidesSlice.reducer,
+    DeleteRidesSlice: DeleteRidesSlice.reducer,
+
+    // bookings
+    listBookingsSlice: listBookingsSlice.reducer,
+    createBookingsSlice: createBookingsSlice.reducer,
+
+    //employees
+    createEmployeesSlice: createEmployeesSlice.reducer,
+    listEmployeesSlice: listEmployeesSlice.reducer,
+    getOneEmployeesSlice: getOneEmployeesSlice.reducer,
+    getOneEmployeeByNumberSlice: getOneEmployeeByPhoneSlice.reducer,
+    UpdateEmployeesSlice: UpdateEmployeesSlice.reducer,
+    DeleteEmployeesSlice: DeleteEmployeesSlice.reducer,
+
+    // messages
+    createMessagesSlice: createMessagesSlice.reducer,
+    listMessagesSlice: listMessagesSlice.reducer,
+    getOneMessageSlice: getOneMessageSlice.reducer,
+
+    // logs
+    listLogsSlice: listLogsSlice.reducer,
   },
 });
 
