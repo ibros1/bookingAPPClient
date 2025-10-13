@@ -38,6 +38,7 @@ export const loginSlice = createSlice({
       state.data = {} as iLoginUserResponse;
       state.loading = false;
       state.error = "";
+      localStorage.removeItem("user_data");
     },
   },
   extraReducers: (builder) => {

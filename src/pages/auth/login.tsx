@@ -26,12 +26,13 @@ const Login = () => {
   // Toasts & redirect effect
   useEffect(() => {
     if (error) {
-      toast.dismiss();
+      toast.dismissAll();
+
       toast.error(error);
     }
 
     if (data?.isSuccess) {
-      toast.dismiss();
+      toast.dismissAll();
       toast.success("Login successful! Redirecting...");
       setRedirecting(true);
 
@@ -58,7 +59,8 @@ const Login = () => {
         .required("Password is required"),
     }),
     onSubmit: async (values) => {
-      toast.dismiss();
+      toast.dismissAll();
+
       toast.loading("Logging in...");
       await dispatch(loginFn(values));
     },
