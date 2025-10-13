@@ -36,7 +36,7 @@ const AdminRouter = () => {
   }
 
   return (
-    <div className="flex h-screen text-black dark:text-white transition-colors duration-300">
+    <div className="flex h-screen dark:bg-slate-950 text-black dark:text-white transition-colors duration-300">
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0  w-80 h-screen bg-white dark:bg-gray-800 shadow-sm transform transition-transform
@@ -58,7 +58,7 @@ const AdminRouter = () => {
 
         {/* Scrollable content */}
         <main className="flex-1 lg:pt-16 w-screen  lg:w-full">
-          <div className="min-h-screen">
+          <div className="min-h-screen ">
             <Outlet />
           </div>
           <footer className="w-full">

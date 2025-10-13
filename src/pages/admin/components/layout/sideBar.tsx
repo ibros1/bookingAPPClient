@@ -311,11 +311,11 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-full bg-gradient-to-b from-[#0f132e] to-[#0a1126] text-gray-200 border-r border-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 z-50 h-screen w-full bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
   ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         {/* Header */}
-        <div className="flex justify-center items-center p-5 border-b border-gray-800">
+        <div className="flex justify-between lg:justify-center   items-center p-5 border-b border-gray-800">
           <h2 className="text-xl  font-bold text-white tracking-wide">
             📋 Booking App
           </h2>
@@ -323,7 +323,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
             onClick={closeSidebar}
             className="p-2 rounded-md hover:bg-gray-700 lg:hidden transition"
           >
-            <X className="w-5 h-5 text-gray-300" />
+            <X className="w-5 h-5 align-bottom text-gray-300" />
           </button>
         </div>
 
@@ -365,7 +365,9 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                     {/* Submenu */}
                     {item.children && (
                       <div
-                        ref={(el) => (submenuRefs.current[item.title] = el)}
+                        ref={(el) => {
+                          submenuRefs.current[item.title] = el;
+                        }}
                         style={{
                           maxHeight: isOpenMenu
                             ? `${

@@ -204,7 +204,7 @@ const AdminDashboard = () => {
                   cy="50%"
                   outerRadius={80}
                   dataKey="value"
-                  label={(props: { name: string; percent: number }) =>
+                  label={(props: any) =>
                     `${props.name} ${(props.percent * 100).toFixed(0)}%`
                   }
                   labelLine={false}

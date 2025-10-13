@@ -16,11 +16,9 @@ export default function ProtectedAdminRoute({
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
 
-  const {
-    data: whoAmi,
-    loading,
-    error,
-  } = useSelector((state: RootState) => state.WhoAmiSlice);
+  const { data: whoAmi, loading } = useSelector(
+    (state: RootState) => state.WhoAmiSlice
+  );
   const loginData = useSelector((state: RootState) => state.loginSlice.data);
 
   // Fetch current user on mount if token exists

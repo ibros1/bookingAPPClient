@@ -9,7 +9,7 @@ const LoadingPages: React.FC<LoadingPagesProps> = ({
   message = "Loading, please wait...",
 }) => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
+    <div className="flex items-center justify-center min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

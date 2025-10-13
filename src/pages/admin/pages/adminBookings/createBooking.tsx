@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
 import type { AppDispatch, RootState } from "@/redux/store";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -18,12 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { iCreatedBookingPayload } from "@/redux/types/booking";
 import {
   createBookingsFn,
   resetCreateBookingstate,
 } from "@/redux/slices/bookings/createBooking";
 import { listRidesFn } from "@/redux/slices/rides/listRidesSlice";
+import type { iCreatedBookingPayload } from "@/redux/types/booking";
 import { useNavigate } from "react-router-dom";
 
 const CreateBooking: React.FC = () => {

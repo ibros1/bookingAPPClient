@@ -166,7 +166,7 @@ const ListMessages: React.FC = () => {
   if (loading) return <ListHotelsSkeleton />;
 
   return (
-    <div className="w-full h-screen p-6 dark:bg-gray-900 dark:text-white">
+    <div className="w-full  p-6 dark:bg-gray-900 dark:text-white">
       <h1 className="text-3xl font-bold mb-6">Messages Management</h1>
 
       {/* Actions */}

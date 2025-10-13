@@ -163,7 +163,7 @@ const MessageDetailedPage = () => {
                   <div className="flex items-center gap-2">
                     {r.sent ? (
                       <Badge
-                        variant="success"
+                        variant="outline"
                         className="flex items-center gap-1 px-2 py-1"
                       >
                         <CheckCircle2 className="h-4 w-4" /> Sent

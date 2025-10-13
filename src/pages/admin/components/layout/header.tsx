@@ -55,7 +55,7 @@ const AdminHeader = ({ toggleSidebar }: AdminHeaderProps) => {
   };
 
   return (
-    <header className="w-full flex items-center justify-between   py-3 px-6 bg-white dark:bg-[#0a1126] border-b border-gray-200 dark:border-gray-700 ">
+    <header className="w-full flex items-center justify-between   py-3 px-6 bg-white dark:bg-slate-950 border-b border-gray-200 dark:border-gray-700 ">
       {/* Left: Logo & Sidebar Toggle */}
       <div className="flex items-center gap-4">
         <button

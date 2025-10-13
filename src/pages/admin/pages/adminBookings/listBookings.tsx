@@ -53,7 +53,6 @@ import {
   ListIcon,
 } from "lucide-react";
 
-import AllRoutesSkeleton from "../../components/skeletons/routesSkeleton";
 import type { Booking } from "@/redux/types/booking";
 import { listBookingsFn } from "@/redux/slices/bookings/listBookings";
 import { Label } from "@/components/ui/label";
@@ -138,7 +137,7 @@ const ListBookings: React.FC = () => {
     setIsEditDialogOpen(true);
   };
 
-  const submitEdit = form.handleSubmit((values) => {
+  const submitEdit = form.handleSubmit(() => {
     toast.success(`Booking ${editingBooking?.id} updated`);
     setIsEditDialogOpen(false);
     setEditingBooking(null);

@@ -129,7 +129,7 @@ const Users: React.FC = () => {
     setEditDialogOpen(true);
   };
 
-  const handleEditSubmit = (data: EditFormValues) => {
+  const handleEditSubmit = () => {
     toast.success("User info updated (mock)");
     setEditDialogOpen(false);
   };
