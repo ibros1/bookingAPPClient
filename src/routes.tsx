@@ -26,6 +26,7 @@ import CreateEmployee from "./pages/admin/pages/adminEmployees/createEmployee";
 
 import Users from "./pages/admin/pages/usersManagement/users";
 import ListAdminLogs from "./pages/admin/pages/AdminLogs/listLogs";
+import AdminLogout from "./pages/admin/pages/adminLogout/adminLogout";
 
 const authRoutes = {
   path: "/auth",
@@ -118,7 +119,10 @@ const adminRoutes = {
       path: "users",
       element: <Users />,
     },
-
+    {
+      path: "/dashboard/admin/logout",
+      element: <AdminLogout />,
+    },
     {
       path: "*",
       element: <AdminNotFound />,

@@ -6,17 +6,15 @@ body {
   font-family: "Poppins", sans-serif;
   font-style: normal;
 }
-.scrollbar-none::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
 
-.scrollbar-none {
+/* Hide scrollbar for all browsers */
+.hide-scrollbar {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent; /* Optional: hide scrollbar track */
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 html,

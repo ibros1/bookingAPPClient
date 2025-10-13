@@ -75,7 +75,7 @@ const AdminHeader = ({ toggleSidebar }: AdminHeaderProps) => {
             {user.role}{" "}
           </span>
         ) : (
-          <span className="bg-amber-400  text-white font-semibold px-3 py-1 border rounded-xl text-sm">
+          <span className="bg-amber-400  text-white font-semibold px-3 py-1 border rounded-md text-sm">
             {" "}
             {user.role}
           </span>

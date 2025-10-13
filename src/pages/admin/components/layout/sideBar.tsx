@@ -13,6 +13,7 @@ import {
   ListIcon,
   Map,
   MapPin,
+  LogOutIcon,
   PlaySquareIcon,
   PlusCircle,
   PlusSquare,
@@ -30,7 +31,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
 
@@ -47,6 +48,7 @@ const IconMap: Record<string, React.ElementType> = {
   MapPin,
   BarChart3,
   CalendarDays,
+  LogOutIcon,
   CalendarPlus,
   ClipboardList,
   ListIcon,
@@ -243,6 +245,7 @@ const navItems = [
       },
     ],
   },
+
   {
     title: "Activity Logs",
     icon: "Activity",
@@ -264,6 +267,19 @@ const navItems = [
         title: "Bookers by Address",
         link: "/dashboard/admin/officer/bookers",
         roles: ["OFFICER"],
+      },
+    ],
+  },
+
+  {
+    title: "Logout",
+    icon: "LogOutIcon",
+    roles: ["BOOKER", "ADMIN", "OFFICER"],
+    children: [
+      {
+        title: "Logout",
+        link: "/dashboard/admin/logout",
+        roles: ["BOOKER", "ADMIN", "OFFICER"],
       },
     ],
   },
@@ -303,7 +319,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     <>
       {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0  bg-black/40 backdrop-blur-md z-50 transition-opacity duration-300 lg:hidden ${
           isOpen ? "opacity-100 visible w-screen" : "opacity-0 invisible"
         }`}
         onClick={closeSidebar}
@@ -311,7 +327,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-full bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0  left-0 z-50 h-screen w-full bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg  transition-all duration-300 ease-in-out
   ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         {/* Header */}
@@ -328,7 +344,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
         </div>
 
         {/* Menu */}
-        <nav className="p-3 overflow-y-auto h-[calc(100%-68px)]">
+        <nav className="p-3 overflow-y-auto h-[calc(100%-68px)] hide-scrollbar">
           <ul className="space-y-2">
             {navItems
               .filter((item) => item.roles.includes(userRole))
