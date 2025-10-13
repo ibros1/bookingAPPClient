@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/redux/store";
 
-import { listLogsFn } from "@/redux/slices/logs/listActivity";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -37,6 +36,7 @@ import {
   Filter,
   FileBarChart,
 } from "lucide-react";
+import { listLogsFn } from "@/redux/slices/logs/listActivity";
 
 const ListAdminLogs: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
