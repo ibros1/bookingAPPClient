@@ -1,39 +1,39 @@
+import type { RootState } from "@/redux/store";
 import {
   Activity,
+  BarChart2,
   BarChart3,
   Building,
   CalendarDays,
   CalendarPlus,
+  CheckSquare,
   ChevronDown,
   ClipboardCheck,
   ClipboardList,
   CreditCard,
+  DollarSign,
+  FileText,
   Home,
   Landmark,
+  List,
   ListIcon,
+  LogOutIcon,
   Map,
   MapPin,
-  LogOutIcon,
   PlaySquareIcon,
   PlusCircle,
   PlusSquare,
   Receipt,
   Shield,
   User,
-  Users,
-  List,
   UserPlus,
-  FileText,
-  DollarSign,
-  CheckSquare,
-  BarChart2,
+  Users,
   WorkflowIcon,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "@/redux/store";
+import { Link, useLocation } from "react-router-dom";
 
 // Map of icon names to components
 const IconMap: Record<string, React.ElementType> = {
