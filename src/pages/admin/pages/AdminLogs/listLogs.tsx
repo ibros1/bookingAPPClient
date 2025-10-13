@@ -36,7 +36,7 @@ import {
   Filter,
   FileBarChart,
 } from "lucide-react";
-import { listLogsFn } from "@/redux/slices/logs/listActivity";
+import { listLogsFn } from "@/redux/slices/logs/ListActivity";
 
 const ListAdminLogs: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
