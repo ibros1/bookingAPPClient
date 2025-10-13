@@ -40,7 +40,7 @@ import { getOneMessageSlice } from "./slices/messages/getOneMessage";
 
 import { listUsersSlice } from "./slices/users/getAllUsers";
 import { updateRoleSlice } from "./slices/users/updateRole";
-import { listLogsSlice } from "./slices/logs/ListActivity";
+import { listLogsSlice } from "./activity/ListActivity";
 
 export const store = configureStore({
   reducer: {
