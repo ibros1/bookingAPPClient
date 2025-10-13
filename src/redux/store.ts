@@ -37,9 +37,10 @@ import { DeleteEmployeesSlice } from "./slices/emplooyee/deleteEmployee";
 import { createMessagesSlice } from "./slices/messages/sendMessage";
 import { listMessagesSlice } from "./slices/messages/listMessages";
 import { getOneMessageSlice } from "./slices/messages/getOneMessage";
-import { listLogsSlice } from "./slices/logs/listActivity";
+
 import { listUsersSlice } from "./slices/users/getAllUsers";
 import { updateRoleSlice } from "./slices/users/updateRole";
+import { listLogsSlice } from "./slices/logs/listActivity";
 
 export const store = configureStore({
   reducer: {

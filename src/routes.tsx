@@ -23,8 +23,9 @@ import ListMessages from "./pages/admin/pages/adminMessages/listMessages";
 import CreateMessage from "./pages/admin/pages/adminMessages/createMessage";
 import MessageDetailedPage from "./pages/admin/pages/adminMessages/getDetailedMessage";
 import CreateEmployee from "./pages/admin/pages/adminEmployees/createEmployee";
-import ListAdminLogs from "./pages/admin/pages/AdminLogs/listLogs";
+
 import Users from "./pages/admin/pages/usersManagement/users";
+import ListAdminLogs from "./pages/admin/pages/AdminLogs/listLogs";
 
 const authRoutes = {
   path: "/auth",
