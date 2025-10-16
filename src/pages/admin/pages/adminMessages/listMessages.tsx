@@ -51,7 +51,7 @@ import {
   listMessagesFn,
 } from "@/redux/slices/messages/listMessages";
 import ListHotelsSkeleton from "../../components/skeletons/hotelsSkeleton";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const PER_PAGE = 10;
 
@@ -78,7 +78,9 @@ const ListMessages: React.FC = () => {
   });
   const watchFilter = filterForm.watch;
 
-  const messages: Datum[] = messagesData?.data ?? [];
+  const messages = useMemo<Datum[]>(() => {
+    return (messagesData?.data as Datum[]) ?? [];
+  }, [messagesData]);
 
   // fetch list on mount / page change
   useEffect(() => {
@@ -86,16 +88,19 @@ const ListMessages: React.FC = () => {
   }, [dispatch, page]);
 
   // filtered messages
+  const currentSearch = watchFilter("search");
+  const currentCreator = watchFilter("creator");
+
   const filteredMessages = useMemo(() => {
-    const q = watchFilter("search").trim().toLowerCase();
-    const creator = watchFilter("creator").trim();
+    const q = currentSearch.trim().toLowerCase();
+    const creator = currentCreator.trim();
 
     return messages.filter((msg) => {
       const matchesSearch = q ? msg.message.toLowerCase().includes(q) : true;
       const matchesCreator = creator ? msg.creator.name === creator : true;
       return matchesSearch && matchesCreator;
     });
-  }, [messages, watchFilter("search"), watchFilter("creator")]);
+  }, [messages, currentSearch, currentCreator]);
 
   // pagination
   const startIndex = (page - 1) * PER_PAGE;
@@ -167,7 +172,23 @@ const ListMessages: React.FC = () => {
 
   return (
     <div className="w-full  p-6 dark:bg-gray-900 dark:text-white">
-      <h1 className="text-3xl font-bold mb-6">Messages Management</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-3xl font-bold">Messages Management</h1>
+        <div className="flex gap-2">
+          <Link
+            to="/dashboard/admin/messages/whatsapp"
+            className="text-sm px-3 py-2 rounded-md bg-slate-900 text-white"
+          >
+            WhatsApp
+          </Link>
+          <Link
+            to="/dashboard/admin/messages/create"
+            className="text-sm px-3 py-2 rounded-md bg-slate-900 text-white"
+          >
+            Create
+          </Link>
+        </div>
+      </div>
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2 p-4 shadow-sm dark:bg-slate-900 dark:border rounded-md">

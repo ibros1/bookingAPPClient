@@ -22,6 +22,7 @@ import ListAllEmployees from "./pages/admin/pages/adminEmployees/listAllEmployee
 
 import ListMessages from "./pages/admin/pages/adminMessages/listMessages";
 import CreateMessage from "./pages/admin/pages/adminMessages/createMessage";
+import WhatsAppAdminPage from "./pages/admin/pages/adminMessages/whatsappAdmin";
 import MessageDetailedPage from "./pages/admin/pages/adminMessages/getDetailedMessage";
 import CreateEmployee from "./pages/admin/pages/adminEmployees/createEmployee";
 
@@ -111,6 +112,10 @@ const adminRoutes = {
     {
       path: "messages/create",
       element: <CreateMessage />,
+    },
+    {
+      path: "messages/whatsapp",
+      element: <WhatsAppAdminPage />,
     },
     {
       path: "messages/:messageId",

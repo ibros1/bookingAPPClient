@@ -229,6 +229,19 @@ const navItems = [
     ],
   },
   {
+    title: "WhatsApp",
+    icon: "Activity",
+    roles: ["ADMIN"],
+    children: [
+      {
+        title: "Integration",
+        link: "/dashboard/admin/messages/whatsapp",
+        roles: ["ADMIN"],
+      },
+    ],
+  },
+
+  {
     title: "Reports",
     icon: "BarChart3",
     roles: ["ADMIN", "OFFICER", "BOOKER"],
