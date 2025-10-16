@@ -64,7 +64,7 @@ const Register = () => {
         .string()
         .length(12, "Phone number must be 12 digits (2526xxxxxxxx)")
         .required(),
-      address: yup.string().required(),
+
       password: yup.string().min(6, "At least 6 characters").required(),
       confirmPassword: yup
         .string()
@@ -74,7 +74,7 @@ const Register = () => {
   });
 
   return (
-    <div className="flex flex-col justify-center items-center h-[100vh] px-4 bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col justify-center items-center h-[100vh] px-4 bg-gray-50 dark:bg-slate-950">
       <form
         action=""
         className=" w-full md:w-[80%] lg:w-[30%]  border rounded-md p-8 flex flex-col gap-4"

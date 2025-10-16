@@ -39,7 +39,7 @@ const AdminRouter = () => {
     <div className="flex h-screen dark:bg-slate-950 text-black dark:text-white transition-colors duration-300">
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 w-72  lg:w-80 h-screen bg-white dark:bg-gray-800 shadow-sm transform transition-transform
+        className={`fixed top-0 left-0 w-72  lg:w-80 h-screen bg-white dark:bg-slate-900 shadow-sm transform transition-transform
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
         lg:translate-x-0 lg:flex z-50`}
       >

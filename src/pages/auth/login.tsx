@@ -22,17 +22,27 @@ const Login = () => {
   );
 
   const [redirecting, setRedirecting] = useState(false);
+  const isLoggedIn = useSelector(
+    (state: RootState) => state.loginSlice.data?.user
+  );
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/dashboard/admin");
+      return;
+    }
+  }, [navigate, isLoggedIn]);
   // Toasts & redirect effect
   useEffect(() => {
     if (error) {
-      toast.dismissAll();
+      toast.dismiss();
 
       toast.error(error);
+      return;
     }
 
     if (data?.isSuccess) {
-      toast.dismissAll();
+      toast.dismiss();
       toast.success("Login successful! Redirecting...");
       setRedirecting(true);
 
