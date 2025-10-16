@@ -312,6 +312,39 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     };
   }, [isOpen]);
 
+  // Close on route change for mobile to avoid stuck open state
+  useEffect(() => {
+    if (isOpen) {
+      closeSidebar();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  // Reset expanded menu when sidebar closes
+  useEffect(() => {
+    if (!isOpen) setOpenMenu(null);
+  }, [isOpen]);
+
+  // Handle Escape key to close
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) closeSidebar();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, closeSidebar]);
+
+  // Auto-close on resize up to desktop to fix overflow glitches
+  useEffect(() => {
+    const onResize = () => {
+      if (window.matchMedia("(min-width: 1024px)").matches && isOpen) {
+        closeSidebar();
+      }
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [isOpen, closeSidebar]);
+
   const toggleMenu = (title: string) =>
     setOpenMenu((prev) => (prev === title ? null : title));
 
@@ -323,12 +356,18 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
           isOpen ? "opacity-100 visible w-screen" : "opacity-0 invisible"
         }`}
         onClick={closeSidebar}
+        aria-hidden={!isOpen}
       />
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0  left-0 z-50 h-screen w-full bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg  transition-all duration-300 ease-in-out
-  ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        role="dialog"
+        aria-modal={isOpen}
+        aria-label="Main navigation"
+        className={`fixed top-0  left-0 z-50 h-screen w-full lg:w-full pb-16 bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg  transition-transform duration-300 ease-in-out
+  ${
+    isOpen ? "translate-x-0" : "-translate-x-full"
+  } lg:translate-x-0 overflow-y-auto hide-scrollbar`}
       >
         {/* Header */}
         <div className="flex justify-between lg:justify-center   items-center p-5 border-b border-gray-800">
@@ -364,6 +403,8 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                           ? "bg-gray-100 text-gray-800 font-semibold shadow-inner"
                           : "text-gray-300 hover:bg-gray-800 hover:text-white"
                       }`}
+                      aria-expanded={!!isOpenMenu}
+                      aria-controls={`submenu-${i}`}
                     >
                       <span className="flex items-center gap-3">
                         <ParentIcon className="w-5 h-5 text-gray-400" />
@@ -381,6 +422,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                     {/* Submenu */}
                     {item.children && (
                       <div
+                        id={`submenu-${i}`}
                         ref={(el) => {
                           submenuRefs.current[item.title] = el;
                         }}

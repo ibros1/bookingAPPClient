@@ -1,10 +1,11 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import AdminNotFound from "./components/Admin404";
 
 import AdminRouter from "./pages/admin/routes/adminRouter";
 
 import Login from "./pages/auth/login";
 import Register from "./pages/auth/register";
+import GuestRoute from "./pages/admin/routes/guest";
 import AllRoutes from "./pages/admin/pages/adminRoutes/listAdminRoute";
 import CreateRoute from "./pages/admin/pages/adminRoutes/createRoutes";
 import AllAddresses from "./pages/admin/pages/adminAddress.tsx/listAdminAddress";
@@ -30,6 +31,11 @@ import AdminLogout from "./pages/admin/pages/adminLogout/adminLogout";
 
 const authRoutes = {
   path: "/auth",
+  element: (
+    <GuestRoute>
+      <Outlet />
+    </GuestRoute>
+  ),
   children: [
     { path: "login", element: <Login /> },
     { path: "register", element: <Register /> },

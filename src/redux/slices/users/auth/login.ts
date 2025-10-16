@@ -51,6 +51,11 @@ export const loginSlice = createSlice({
       state.loading = false;
       state.data = action.payload;
       state.error = "";
+      try {
+        localStorage.setItem("user_data", JSON.stringify(action.payload));
+      } catch {
+        // ignore storage errors
+      }
     });
     builder.addCase(loginFn.rejected, (state, action) => {
       state.data = {} as iLoginUserResponse;
