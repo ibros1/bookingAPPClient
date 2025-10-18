@@ -52,13 +52,12 @@ const AdminRouter = () => {
         </div>
 
         {/* Scrollable content */}
-        <main className="flex-1  overflow-auto">
-          <div className="min-h-screen">
+        <main className=" ">
+          <div className="flex-1 min-h-screen">
             <Outlet />
           </div>
-          <footer className="w-full">
-            <Footer />
-          </footer>
+
+          <Footer />
         </main>
       </div>
     </div>

@@ -384,7 +384,10 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-4 mb-20">
+          {/* Sidebar section header */}
+          <div className="py-[2px]"></div>
+
           {navItems
             .filter((item) => item.roles.includes(userRole))
             .map((item, i) => {
@@ -428,7 +431,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                           : "0px",
                         transition: "max-height 0.35s ease-in-out",
                       }}
-                      className="overflow-hidden pl-6 border-l border-gray-700"
+                      className="overflow-hidden px-4 border-l border-gray-700"
                     >
                       <ul className="my-2 space-y-1">
                         {item.children
@@ -440,7 +443,7 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                               <li key={j}>
                                 <Link
                                   to={sub.link}
-                                  className={`block px-4 py-2 rounded-md text-sm transition-colors ${
+                                  className={`block px-4  py-2 rounded-md text-sm transition-colors ${
                                     isActive
                                       ? "bg-gray-800 text-green-400 font-medium"
                                       : "text-gray-400 hover:bg-gray-800 hover:text-white"
