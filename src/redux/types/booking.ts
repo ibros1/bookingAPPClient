@@ -4,6 +4,16 @@ export interface iListedBookingsResponse {
   meta: Meta;
 }
 
+export interface Booker {
+  id: string;
+  name: string;
+  email: string | null;
+  role: string;
+  profilePhoto: string | null;
+  phone: string;
+  address?: string;
+}
+
 export interface Booking {
   id: string;
   rideId: string;
@@ -31,15 +41,7 @@ export interface Booking {
       updatedAt: Date;
     };
   };
-
-  booker: {
-    id: string;
-    name: string;
-    email: null;
-    role: string;
-    profilePhoto: null;
-    phone: string;
-  };
+  booker?: Booker;
 }
 
 export interface Meta {
@@ -72,39 +74,6 @@ export interface iCreatedBookingResponse {
   booking: Booking;
 }
 
-export interface Booking {
-  id: string;
-  rideId: string;
-  bookerId: string;
-  currency: string;
-  name: string;
-  phoneNumber: string;
-  amount: number;
-  qty: number;
-  total_amount: number;
-  paymentType: string;
-  createdAt: Date;
-  ride: Ride;
-}
-
-export interface Ride {
-  id: string;
-  userId: string;
-  routeId: string;
-  fareUSD: number;
-  fareSLSH: number;
-  route: Route;
-}
-
-export interface Route {
-  id: string;
-  userId: string;
-  from: string;
-  end: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
 // my-bookings
 
 export interface iListedMyBookingsResponse {
@@ -125,35 +94,6 @@ export interface iListedMyBookingsResponse {
   };
 }
 
-export interface Booking {
-  id: string;
-  rideId: string;
-  bookerId: string;
-  currency: string;
-  name: string;
-  phoneNumber: string;
-  amount: number;
-  qty: number;
-  total_amount: number;
-  paymentType: string;
-  createdAt: Date;
-  ride: {
-    id: string;
-    userId: string;
-    routeId: string;
-    fareUSD: number;
-    fareSLSH: number;
-    route: {
-      id: string;
-      userId: string;
-      from: string;
-      end: string;
-      createdAt: Date;
-      updatedAt: Date;
-    };
-  };
-}
-
 export interface iListedMyBookingsPayload {
   page: number;
   perPage: number;
@@ -165,48 +105,4 @@ export interface iGetOneBookingDetailResponse {
   isSuccess: boolean;
   message: string;
   booking: Booking;
-}
-
-export interface Booking {
-  id: string;
-  rideId: string;
-  bookerId: string;
-  currency: string;
-  name: string;
-  phoneNumber: string;
-  amount: number;
-  qty: number;
-  total_amount: number;
-  paymentType: string;
-  createdAt: Date;
-  ride: Ride;
-  booker: Booker;
-}
-
-export interface Booker {
-  id: string;
-  name: string;
-  email: null;
-  phone: string;
-  role: string;
-  profilePhoto: null;
-  address: string;
-}
-
-export interface Ride {
-  id: string;
-  userId: string;
-  routeId: string;
-  fareUSD: number;
-  fareSLSH: number;
-  route: Route;
-}
-
-export interface Route {
-  id: string;
-  userId: string;
-  from: string;
-  end: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
