@@ -31,7 +31,7 @@ import {
   WorkflowIcon,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
@@ -86,11 +86,7 @@ const navItems = [
     icon: "Users",
     roles: ["ADMIN"],
     children: [
-      {
-        title: "All Users",
-        link: "/dashboard/admin/users",
-        roles: ["ADMIN"],
-      },
+      { title: "All Users", link: "/dashboard/admin/users", roles: ["ADMIN"] },
       {
         title: "Create User",
         link: "/dashboard/admin/users/create",
@@ -118,11 +114,7 @@ const navItems = [
         link: "/dashboard/admin/bookings/create",
         roles: ["ADMIN", "BOOKER"],
       },
-      {
-        title: "All Rides",
-        link: "/dashboard/admin/rides",
-        roles: ["ADMIN"],
-      },
+      { title: "All Rides", link: "/dashboard/admin/rides", roles: ["ADMIN"] },
       {
         title: "My Bookings",
         link: "/dashboard/admin/booker/my-bookings",
@@ -240,7 +232,6 @@ const navItems = [
       },
     ],
   },
-
   {
     title: "Reports",
     icon: "BarChart3",
@@ -258,17 +249,12 @@ const navItems = [
       },
     ],
   },
-
   {
     title: "Activity Logs",
     icon: "Activity",
     roles: ["ADMIN"],
     children: [
-      {
-        title: "Logs",
-        link: "/dashboard/admin/logs",
-        roles: ["ADMIN"],
-      },
+      { title: "Logs", link: "/dashboard/admin/logs", roles: ["ADMIN"] },
     ],
   },
   {
@@ -283,7 +269,6 @@ const navItems = [
       },
     ],
   },
-
   {
     title: "Logout",
     icon: "LogOutIcon",
@@ -300,45 +285,59 @@ const navItems = [
 
 type SideBarProps = { isOpen: boolean; closeSidebar: () => void };
 
+const normalizePath = (p: string) => {
+  if (!p) return "/";
+  const normalized = p.replace(/\/+$/, "");
+  return normalized === "" ? "/" : normalized;
+};
+
 const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
   const location = useLocation();
+  const pathname = normalizePath(location.pathname);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const submenuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-
   const userRole = useSelector(
     (state: RootState) => state.loginSlice.data?.user.role
   ) as string;
 
-  // Highlight menu based on route
-  useEffect(() => {
-    const active = navItems.find((item) =>
-      item.children?.some((sub) => sub.link === location.pathname)
-    );
-    if (active) setOpenMenu(active.title);
-  }, [location.pathname]);
+  const bestMatch = useMemo(() => {
+    let best = {
+      link: null as string | null,
+      parentTitle: null as string | null,
+      score: -1,
+    };
+    navItems.forEach((item) => {
+      item.children?.forEach((child) => {
+        if (!child.roles.includes(userRole)) return;
+        const childLink = normalizePath(child.link);
+        const score =
+          pathname === childLink
+            ? 1000000 + childLink.length
+            : childLink !== "/" && (pathname + "/").startsWith(childLink + "/")
+            ? childLink.length
+            : -1;
+        if (score > best.score)
+          best = { link: childLink, parentTitle: item.title, score };
+      });
+    });
+    return best;
+  }, [pathname, userRole]);
 
-  // Lock body scroll on mobile
+  useEffect(() => {
+    if (bestMatch.parentTitle) setOpenMenu(bestMatch.parentTitle);
+  }, [bestMatch.link]);
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
-
-  // Close on route change for mobile to avoid stuck open state
   useEffect(() => {
-    if (isOpen) {
-      closeSidebar();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
-
-  // Reset expanded menu when sidebar closes
+    if (isOpen) closeSidebar();
+  }, [pathname]);
   useEffect(() => {
     if (!isOpen) setOpenMenu(null);
   }, [isOpen]);
-
-  // Handle Escape key to close
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) closeSidebar();
@@ -346,13 +345,10 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, closeSidebar]);
-
-  // Auto-close on resize up to desktop to fix overflow glitches
   useEffect(() => {
     const onResize = () => {
-      if (window.matchMedia("(min-width: 1024px)").matches && isOpen) {
+      if (window.matchMedia("(min-width: 1024px)").matches && isOpen)
         closeSidebar();
-      }
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -363,10 +359,10 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Overlay */}
       <div
-        className={`fixed inset-0  bg-black/40 backdrop-blur-md z-50 transition-opacity duration-300 lg:hidden ${
-          isOpen ? "opacity-100 visible w-screen" : "opacity-0 invisible"
+        className={`fixed inset-0 bg-black/40 backdrop-blur-md z-50 transition-opacity duration-300 ease-in-out w-screen ${
+          isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={closeSidebar}
         aria-hidden={!isOpen}
@@ -377,42 +373,40 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
         role="dialog"
         aria-modal={isOpen}
         aria-label="Main navigation"
-        className={`fixed top-0  left-0 z-50 h-screen w-full lg:w-full pb-16 bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg  transition-transform duration-300 ease-in-out
-  ${
-    isOpen ? "translate-x-0" : "-translate-x-full"
-  } lg:translate-x-0 overflow-y-auto hide-scrollbar`}
+        className={`fixed top-0 left-0 z-50 h-screen w-full lg:w-full pb-16 bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 overflow-y-auto hide-scrollbar`}
       >
-        {/* Header */}
-        <div className="flex justify-between lg:justify-center   items-center p-5 border-b border-gray-800">
-          <h2 className="text-xl  font-bold text-white tracking-wide">
+        <div className="flex justify-between lg:justify-center items-center p-5 border-b border-gray-800">
+          <h2 className="text-xl font-bold text-white tracking-wide">
             📋 Booking App
           </h2>
           <button
             onClick={closeSidebar}
             className="p-2 rounded-md hover:bg-gray-700 lg:hidden transition"
+            aria-label="Close sidebar"
           >
-            <X className="w-5 h-5 align-bottom text-gray-300" />
+            <X className="w-5 h-5 text-gray-300" />
           </button>
         </div>
 
-        {/* Menu */}
         <nav className="p-3 overflow-y-auto h-[calc(100%-68px)] hide-scrollbar">
           <ul className="space-y-2">
             {navItems
               .filter((item) => item.roles.includes(userRole))
               .map((item, i) => {
                 const isOpenMenu = openMenu === item.title;
+                const parentIsActive = bestMatch.parentTitle === item.title;
                 const ParentIcon = IconMap[item.icon] || Home;
 
                 return (
                   <li key={i}>
-                    <span className="h-6"></span>
                     <button
                       onClick={() =>
                         item.children ? toggleMenu(item.title) : closeSidebar()
                       }
-                      className={`flex justify-between mt-4 items-center w-full px-4 py-2  rounded-lg transition-all duration-300 ${
-                        isOpenMenu
+                      className={`flex justify-between items-center w-full px-4 py-2 mt-2 rounded-lg transition-all duration-500 ease-in-out ${
+                        isOpenMenu || parentIsActive
                           ? "bg-gray-100 text-gray-800 font-semibold shadow-inner"
                           : "text-gray-300 hover:bg-gray-800 hover:text-white"
                       }`}
@@ -425,9 +419,10 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                       </span>
                       {item.children && (
                         <ChevronDown
-                          className={`w-5 h-5 text-gray-400 transition-transform ${
+                          className={`w-5 h-5 text-gray-400 transition-transform duration-500 ease-in-out ${
                             isOpenMenu ? "rotate-180 text-green-400" : ""
                           }`}
+                          aria-hidden
                         />
                       )}
                     </button>
@@ -442,28 +437,31 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                         style={{
                           maxHeight: isOpenMenu
                             ? `${
-                                submenuRefs.current[item.title]?.scrollHeight
+                                submenuRefs.current[item.title]?.scrollHeight ??
+                                0
                               }px`
                             : "0px",
-                          transition: "max-height 0.4s ease-in-out",
+                          transition: "max-height 0.3s ease-in-out",
                         }}
-                        className="mx-4 my-4 mt-1 border-l border-gray-700 pl-3 overflow-hidden"
+                        className="mx-4 mt-1 border-l border-gray-700 pl-3 overflow-hidden"
                       >
                         <ul className="space-y-1 my-2">
                           {item.children
                             .filter((sub) => sub.roles.includes(userRole))
                             .map((sub, j) => {
-                              const isActive = location.pathname === sub.link;
+                              const subLink = normalizePath(sub.link);
+                              const isActive = bestMatch.link === subLink;
                               return (
                                 <li key={j}>
                                   <Link
                                     to={sub.link}
                                     onClick={closeSidebar}
-                                    className={`flex items-center px-4 py-2 rounded-md text-sm transition-colors ${
+                                    className={`flex items-center px-4 py-2 rounded-md text-sm transition-colors duration-500 ease-in-out ${
                                       isActive
                                         ? "bg-gray-800 text-green-400 font-medium"
                                         : "text-gray-400 hover:bg-gray-800 hover:text-white"
                                     }`}
+                                    aria-current={isActive ? "page" : undefined}
                                   >
                                     {sub.title}
                                   </Link>
