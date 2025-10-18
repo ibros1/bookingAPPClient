@@ -17,6 +17,9 @@ const AdminRouter = () => {
   const allowedRoles = ["ADMIN", "OFFICER", "BOOKER"];
   const navigate = useNavigate();
 
+  // Debug logging
+  console.log("AdminRouter render:", { sidebarOpen, user: user?.role });
+
   // redirect if not logged in
   useEffect(() => {
     if (!user) {
@@ -24,7 +27,10 @@ const AdminRouter = () => {
     }
   }, [user, navigate]);
 
-  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const toggleSidebar = () => {
+    console.log("Toggle sidebar clicked, current state:", sidebarOpen);
+    setSidebarOpen((prev) => !prev);
+  };
 
   if (userState.loading) return <LoadingPages />;
 
@@ -38,16 +44,11 @@ const AdminRouter = () => {
   return (
     <div className="flex h-screen dark:bg-slate-950 text-black dark:text-white transition-colors duration-300">
       {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 w-72  lg:w-80 h-screen bg-white dark:bg-slate-900 shadow-sm transform transition-transform
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-        lg:translate-x-0 lg:flex z-50`}
-      >
-        <SideBar
-          isOpen={sidebarOpen}
-          closeSidebar={() => setSidebarOpen(false)}
-        />
-      </aside>
+
+      <SideBar
+        isOpen={sidebarOpen}
+        closeSidebar={() => setSidebarOpen(false)}
+      />
 
       {/* Main area */}
       <div className="flex-1 flex flex-col ml-0 lg:ml-80">

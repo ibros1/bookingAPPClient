@@ -35,7 +35,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
-// Map of icon names to components
+// 🔹 Icon Map
 const IconMap: Record<string, React.ElementType> = {
   Home,
   User,
@@ -67,7 +67,7 @@ const IconMap: Record<string, React.ElementType> = {
   Landmark,
 };
 
-// Sidebar navigation items
+// 🔹 Navigation Items
 const navItems = [
   {
     title: "Dashboard",
@@ -283,198 +283,180 @@ const navItems = [
   },
 ];
 
-type SideBarProps = { isOpen: boolean; closeSidebar: () => void };
-
+// 🔹 Utility
 const normalizePath = (p: string) => {
   if (!p) return "/";
   const normalized = p.replace(/\/+$/, "");
   return normalized === "" ? "/" : normalized;
 };
 
+type SideBarProps = { isOpen: boolean; closeSidebar: () => void };
+
 const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
   const location = useLocation();
   const pathname = normalizePath(location.pathname);
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const submenuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const userRole = useSelector(
     (state: RootState) => state.loginSlice.data?.user.role
   ) as string;
 
-  const bestMatch = useMemo(() => {
-    let best = {
-      link: null as string | null,
-      parentTitle: null as string | null,
-      score: -1,
-    };
-    navItems.forEach((item) => {
-      item.children?.forEach((child) => {
-        if (!child.roles.includes(userRole)) return;
-        const childLink = normalizePath(child.link);
-        const score =
-          pathname === childLink
-            ? 1000000 + childLink.length
-            : childLink !== "/" && (pathname + "/").startsWith(childLink + "/")
-            ? childLink.length
-            : -1;
-        if (score > best.score)
-          best = { link: childLink, parentTitle: item.title, score };
-      });
-    });
-    return best;
+  // Debug logging
+  console.log("SideBar render:", { isOpen, pathname, userRole });
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const submenuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const prevPathnameRef = useRef(pathname);
+
+  // 🔹 Find Active Route and Parent
+  const activeRoute = useMemo(() => {
+    let found = { parent: null as string | null, link: null as string | null };
+    for (const parent of navItems) {
+      for (const child of parent.children || []) {
+        if (!child.roles.includes(userRole)) continue;
+        if (pathname.startsWith(normalizePath(child.link))) {
+          found = { parent: parent.title, link: normalizePath(child.link) };
+          break;
+        }
+      }
+    }
+    return found;
   }, [pathname, userRole]);
 
+  // 🔹 Auto Open Active Parent
   useEffect(() => {
-    if (bestMatch.parentTitle) setOpenMenu(bestMatch.parentTitle);
-  }, [bestMatch.link]);
+    if (activeRoute.parent) setOpenMenu(activeRoute.parent);
+  }, [activeRoute.parent]);
+
+  // 🔹 Close sidebar on route change (mobile)
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
+    if (prevPathnameRef.current !== pathname && isOpen) {
+      closeSidebar();
+    }
+    prevPathnameRef.current = pathname;
+  }, [pathname, isOpen, closeSidebar]);
+
+  // 🔹 Escape key close
   useEffect(() => {
-    if (isOpen) closeSidebar();
-  }, [pathname]);
-  useEffect(() => {
-    if (!isOpen) setOpenMenu(null);
-  }, [isOpen]);
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) closeSidebar();
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [isOpen, closeSidebar]);
+
+  // 🔹 Resize close (desktop)
   useEffect(() => {
-    const onResize = () => {
+    const handleResize = () => {
       if (window.matchMedia("(min-width: 1024px)").matches && isOpen)
         closeSidebar();
     };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isOpen, closeSidebar]);
 
-  const toggleMenu = (title: string) =>
+  const toggleMenu = (title: string) => {
     setOpenMenu((prev) => (prev === title ? null : title));
+  };
 
   return (
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-black/40 backdrop-blur-md z-50 transition-opacity duration-300 ease-in-out w-screen ${
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300 ease-in-out ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={closeSidebar}
-        aria-hidden={!isOpen}
       />
 
       {/* Sidebar */}
       <aside
-        role="dialog"
-        aria-modal={isOpen}
-        aria-label="Main navigation"
-        className={`fixed top-0 left-0 z-50 h-screen w-full lg:w-full pb-16 bg-slate-950 text-gray-200 border-r border-gray-800 shadow-lg transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 overflow-y-auto hide-scrollbar`}
+        className={`fixed top-0 left-0 z-50 h-screen w-[90%] sm:w-80 bg-slate-950 text-gray-200 border-r border-gray-800 shadow-xl
+  transform transition-transform duration-300 ease-in-out
+  ${isOpen ? "translate-x-0" : "-translate-x-full"}
+  lg:translate-x-0 overflow-y-auto hide-scrollbar`}
       >
         <div className="flex justify-between lg:justify-center items-center p-5 border-b border-gray-800">
-          <h2 className="text-xl font-bold text-white tracking-wide">
+          <h2 className="text-lg font-bold text-white tracking-wide">
             📋 Booking App
           </h2>
           <button
             onClick={closeSidebar}
-            className="p-2 rounded-md hover:bg-gray-700 lg:hidden transition"
-            aria-label="Close sidebar"
+            className="p-2 rounded-md hover:bg-gray-700 lg:hidden"
           >
             <X className="w-5 h-5 text-gray-300" />
           </button>
         </div>
 
-        <nav className="p-3 overflow-y-auto h-[calc(100%-68px)] hide-scrollbar">
-          <ul className="space-y-2">
-            {navItems
-              .filter((item) => item.roles.includes(userRole))
-              .map((item, i) => {
-                const isOpenMenu = openMenu === item.title;
-                const parentIsActive = bestMatch.parentTitle === item.title;
-                const ParentIcon = IconMap[item.icon] || Home;
+        {/* Navigation */}
+        <nav className="p-4 space-y-2">
+          {navItems
+            .filter((item) => item.roles.includes(userRole))
+            .map((item, i) => {
+              const isMenuOpen = openMenu === item.title;
+              const isParentActive = activeRoute.parent === item.title;
+              const ParentIcon = IconMap[item.icon] || Home;
 
-                return (
-                  <li key={i}>
-                    <button
-                      onClick={() =>
-                        item.children ? toggleMenu(item.title) : closeSidebar()
-                      }
-                      className={`flex justify-between items-center w-full px-4 py-2 mt-2 rounded-lg transition-all duration-500 ease-in-out ${
-                        isOpenMenu || parentIsActive
-                          ? "bg-gray-100 text-gray-800 font-semibold shadow-inner"
-                          : "text-gray-300 hover:bg-gray-800 hover:text-white"
-                      }`}
-                      aria-expanded={!!isOpenMenu}
-                      aria-controls={`submenu-${i}`}
-                    >
-                      <span className="flex items-center gap-3">
-                        <ParentIcon className="w-5 h-5 text-gray-400" />
-                        {item.title}
-                      </span>
-                      {item.children && (
-                        <ChevronDown
-                          className={`w-5 h-5 text-gray-400 transition-transform duration-500 ease-in-out ${
-                            isOpenMenu ? "rotate-180 text-green-400" : ""
-                          }`}
-                          aria-hidden
-                        />
-                      )}
-                    </button>
-
-                    {/* Submenu */}
+              return (
+                <div key={i}>
+                  <button
+                    onClick={() => toggleMenu(item.title)}
+                    className={`flex justify-between items-center w-full px-4 py-2 rounded-lg text-left transition-all duration-300 ${
+                      isMenuOpen || isParentActive
+                        ? "bg-gray-100 text-gray-900 font-semibold"
+                        : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                    }`}
+                  >
+                    <span className="flex items-center gap-3">
+                      <ParentIcon className="w-5 h-5 text-gray-400" />
+                      {item.title}
+                    </span>
                     {item.children && (
-                      <div
-                        id={`submenu-${i}`}
-                        ref={(el) => {
-                          submenuRefs.current[item.title] = el;
-                        }}
-                        style={{
-                          maxHeight: isOpenMenu
-                            ? `${
-                                submenuRefs.current[item.title]?.scrollHeight ??
-                                0
-                              }px`
-                            : "0px",
-                          transition: "max-height 0.3s ease-in-out",
-                        }}
-                        className="mx-4 mt-1 border-l border-gray-700 pl-3 overflow-hidden"
-                      >
-                        <ul className="space-y-1 my-2">
-                          {item.children
-                            .filter((sub) => sub.roles.includes(userRole))
-                            .map((sub, j) => {
-                              const subLink = normalizePath(sub.link);
-                              const isActive = bestMatch.link === subLink;
-                              return (
-                                <li key={j}>
-                                  <Link
-                                    to={sub.link}
-                                    onClick={closeSidebar}
-                                    className={`flex items-center px-4 py-2 rounded-md text-sm transition-colors duration-500 ease-in-out ${
-                                      isActive
-                                        ? "bg-gray-800 text-green-400 font-medium"
-                                        : "text-gray-400 hover:bg-gray-800 hover:text-white"
-                                    }`}
-                                    aria-current={isActive ? "page" : undefined}
-                                  >
-                                    {sub.title}
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </div>
+                      <ChevronDown
+                        className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
+                          isMenuOpen ? "rotate-180 text-green-400" : ""
+                        }`}
+                      />
                     )}
-                  </li>
-                );
-              })}
-          </ul>
+                  </button>
+
+                  {item.children && (
+                    <div
+                      ref={(el) => {
+                        submenuRefs.current[item.title] = el;
+                      }}
+                      style={{
+                        maxHeight: isMenuOpen
+                          ? `${submenuRefs.current[item.title]?.scrollHeight}px`
+                          : "0px",
+                        transition: "max-height 0.35s ease-in-out",
+                      }}
+                      className="overflow-hidden pl-6 border-l border-gray-700"
+                    >
+                      <ul className="my-2 space-y-1">
+                        {item.children
+                          .filter((sub) => sub.roles.includes(userRole))
+                          .map((sub, j) => {
+                            const subLink = normalizePath(sub.link);
+                            const isActive = activeRoute.link === subLink;
+                            return (
+                              <li key={j}>
+                                <Link
+                                  to={sub.link}
+                                  className={`block px-4 py-2 rounded-md text-sm transition-colors ${
+                                    isActive
+                                      ? "bg-gray-800 text-green-400 font-medium"
+                                      : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                                  }`}
+                                >
+                                  {sub.title}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </nav>
       </aside>
     </>

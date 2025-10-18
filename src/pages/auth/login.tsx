@@ -69,9 +69,6 @@ const Login = () => {
         .required("Password is required"),
     }),
     onSubmit: async (values) => {
-      toast.dismissAll();
-
-      toast.loading("Logging in...");
       await dispatch(loginFn(values));
     },
   });
