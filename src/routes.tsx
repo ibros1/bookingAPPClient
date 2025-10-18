@@ -29,6 +29,8 @@ import CreateEmployee from "./pages/admin/pages/adminEmployees/createEmployee";
 import Users from "./pages/admin/pages/usersManagement/users";
 import ListAdminLogs from "./pages/admin/pages/AdminLogs/listLogs";
 import AdminLogout from "./pages/admin/pages/adminLogout/adminLogout";
+import MyBookings from "./pages/admin/pages/bookerBookings/myBookings";
+import BookingDetail from "./pages/admin/pages/adminBookings/bookingDetail";
 
 const authRoutes = {
   path: "/auth",
@@ -92,6 +94,14 @@ const adminRoutes = {
     {
       path: "bookings",
       element: <ListBookings />,
+    },
+    {
+      path: "booker/my-bookings",
+      element: <MyBookings />,
+    },
+    {
+      path: "bookings/:bookingId",
+      element: <BookingDetail />,
     },
     {
       path: "bookings/create",

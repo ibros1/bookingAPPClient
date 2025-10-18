@@ -130,7 +130,30 @@ const CreateBooking: React.FC = () => {
       toast.dismiss();
       toast.success("Booking created successfully!");
       dispatch(resetCreateBookingstate());
-      navigate("/dashboard/admin/bookings");
+
+      // Reset form
+      setForm({
+        amount: 0,
+        bookerId: loginState.data?.user.id,
+        currency: "USD",
+        name: "",
+        phoneNumber: "",
+        paymentType: "Zaad",
+        qty: 1,
+        rideId: "",
+        total_amount: 0,
+      });
+
+      // Role-based redirection
+      const userRole = loginState.data?.user?.role;
+      if (userRole === "BOOKER") {
+        navigate("/dashboard/admin/booker/my-bookings");
+      } else if (userRole === "ADMIN" || userRole === "OFFICER") {
+        navigate("/dashboard/admin/bookings");
+      } else {
+        // Fallback to all bookings if role is not recognized
+        navigate("/dashboard/admin/bookings");
+      }
     }
   }, [
     createBookingsState.data,
@@ -138,6 +161,8 @@ const CreateBooking: React.FC = () => {
     createBookingsState.error,
     navigate,
     dispatch,
+    loginState.data?.user?.role,
+    loginState.data?.user?.id,
   ]);
 
   // submit form
@@ -151,19 +176,8 @@ const CreateBooking: React.FC = () => {
     try {
       const resultAction = await dispatch(createBookingsFn(form));
       if (createBookingsFn.fulfilled.match(resultAction)) {
-        toast.success("Booking created successfully!");
-        dispatch(resetCreateBookingstate());
-        setForm({
-          amount: 0,
-          bookerId: loginState.data?.user.id,
-          currency: "USD",
-          name: "",
-          phoneNumber: "",
-          paymentType: "Zaad",
-          qty: 1,
-          rideId: "",
-          total_amount: 0,
-        });
+        // The useEffect will handle the redirection and form reset
+        // No need to duplicate the logic here
       } else {
         toast.error(
           (resultAction.payload as string) || "Failed to create booking"

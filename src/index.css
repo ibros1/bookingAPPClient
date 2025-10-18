@@ -140,3 +140,16 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* === Fix OKLCH color issue for html2pdf === */
+.pdf-mode,
+.pdf-mode * {
+  color: #000 !important;
+  background-color: #fff !important;
+  border-color: #ddd !important;
+  fill: #000 !important;
+  stroke: #000 !important;
+  /* Prevent transparent backgrounds from rendering as oklch */
+  --tw-bg-opacity: 1 !important;
+  --tw-text-opacity: 1 !important;
+}
