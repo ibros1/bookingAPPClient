@@ -17,9 +17,6 @@ const AdminRouter = () => {
   const allowedRoles = ["ADMIN", "OFFICER", "BOOKER"];
   const navigate = useNavigate();
 
-  // Debug logging
-  console.log("AdminRouter render:", { sidebarOpen, user: user?.role });
-
   // redirect if not logged in
   useEffect(() => {
     if (!user) {
@@ -27,10 +24,7 @@ const AdminRouter = () => {
     }
   }, [user, navigate]);
 
-  const toggleSidebar = () => {
-    console.log("Toggle sidebar clicked, current state:", sidebarOpen);
-    setSidebarOpen((prev) => !prev);
-  };
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   if (userState.loading) return <LoadingPages />;
 
@@ -53,13 +47,13 @@ const AdminRouter = () => {
       {/* Main area */}
       <div className="flex-1 flex flex-col ml-0 lg:ml-80">
         {/* Header */}
-        <header className="w-full pl-0 lg:pl-80 lg:z-50 lg:fixed  top-0 left-0">
+        <header className="w-full lg:pl-80 lg:z-50 lg:fixed lg:top-0 lg:left-0">
           <AdminHeader toggleSidebar={toggleSidebar} />
         </header>
 
         {/* Scrollable content */}
-        <main className="flex-1 lg:pt-16 w-screen overflow-auto  lg:w-full">
-          <div className="min-h-screen ">
+        <main className="flex-1 lg:pt-16 overflow-auto">
+          <div className="min-h-screen">
             <Outlet />
           </div>
           <footer className="w-full">

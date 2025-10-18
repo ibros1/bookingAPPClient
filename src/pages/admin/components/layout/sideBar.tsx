@@ -298,9 +298,6 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
   const userRole = useSelector(
     (state: RootState) => state.loginSlice.data?.user.role
   ) as string;
-
-  // Debug logging
-  console.log("SideBar render:", { isOpen, pathname, userRole });
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const submenuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const prevPathnameRef = useRef(pathname);
