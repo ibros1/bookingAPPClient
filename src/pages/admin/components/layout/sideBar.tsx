@@ -396,9 +396,11 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
                   <button
                     onClick={() => toggleMenu(item.title)}
                     className={`flex justify-between items-center w-full px-4 py-2 rounded-lg text-left transition-all duration-300 ${
-                      isMenuOpen || isParentActive
-                        ? "bg-gray-100 text-gray-900 font-semibold"
-                        : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                      isParentActive
+                        ? "bg-gray-100 text-gray-900 font-semibold" // active route parent
+                        : isMenuOpen
+                        ? "bg-gray-800 text-gray-200" // just opened but not active
+                        : "text-gray-300 hover:bg-gray-800 hover:text-white" // default
                     }`}
                   >
                     <span className="flex items-center gap-3">
