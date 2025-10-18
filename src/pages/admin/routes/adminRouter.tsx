@@ -52,8 +52,8 @@ const AdminRouter = () => {
         </header>
 
         {/* Scrollable content */}
-        <main className="flex-1 lg:pt-16 overflow-auto">
-          <div className="min-h-screen">
+        <main className="flex-1 lg:pt-16 w-screen lg:w-full overflow-auto">
+          <div className="min-h-screen ">
             <Outlet />
           </div>
           <footer className="w-full">

@@ -308,7 +308,8 @@ const SideBar = ({ isOpen, closeSidebar }: SideBarProps) => {
     for (const parent of navItems) {
       for (const child of parent.children || []) {
         if (!child.roles.includes(userRole)) continue;
-        if (pathname.startsWith(normalizePath(child.link))) {
+        // ✅ EXACT MATCH
+        if (normalizePath(child.link) === pathname) {
           found = { parent: parent.title, link: normalizePath(child.link) };
           break;
         }
