@@ -45,15 +45,15 @@ const AdminRouter = () => {
       />
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col ml-0 lg:ml-80">
+      <div className="w-full ml-0 lg:ml-80  overflow-auto">
         {/* Header */}
-        <header className="w-full lg:pl-80 lg:z-50 fixed lg:top-0 lg:left-0">
+        <div className="w-full   top-0 left-0">
           <AdminHeader toggleSidebar={toggleSidebar} />
-        </header>
+        </div>
 
         {/* Scrollable content */}
-        <main className="flex-1 pt-16 w-screen lg:w-full overflow-auto">
-          <div className="min-h-screen ">
+        <main className="flex-1  overflow-auto">
+          <div className="min-h-screen">
             <Outlet />
           </div>
           <footer className="w-full">
