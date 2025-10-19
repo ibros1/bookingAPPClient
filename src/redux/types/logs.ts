@@ -1,4 +1,4 @@
-export interface iListedActivityLogsResponse {
+export interface iListedLogsResponse {
   isSuccess: boolean;
   message: string;
   activityLogs: ActivityLog[];
