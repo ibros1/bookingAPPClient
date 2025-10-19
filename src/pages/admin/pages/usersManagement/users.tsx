@@ -1,31 +1,6 @@
+// src/app/(admin)/users/Users.tsx  (or wherever you keep it)
 "use client";
 
-import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
-import { FormProvider, useForm, Controller } from "react-hook-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,25 +11,56 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  UsersIcon,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   CheckCircle2,
-  XCircle,
-  Filter,
-  RefreshCw,
-  MoreHorizontal,
   Edit,
+  Filter,
+  MoreHorizontal,
+  RefreshCw,
   Trash2,
+  Users as UsersIcon,
   Wifi,
+  XCircle,
 } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
 import LoadingPages from "@/components/loading";
-import type { AppDispatch, RootState } from "@/redux/store";
-import type { User } from "@/redux/types/user";
-import { listUsersFn } from "@/redux/slices/users/getAllUsers";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { User as IUser } from "@/redux/slices/userManagement/userManagement";
+import {
+  deleteUser,
+  getAllUsers,
+  updateUser,
+} from "@/redux/slices/userManagement/userManagement";
+import type { AppDispatch, RootState } from "@/redux/store";
 
 interface FilterFormValues {
   role: string;
@@ -69,16 +75,12 @@ interface EditFormValues {
 
 const Users: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { data, loading, error } = useSelector(
-    (state: RootState) => state.listUsersSlice
-  );
 
-  const users: User[] = data?.users || [];
   const [page, setPage] = useState(1);
   const perPage = 10;
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [editUser, setEditUser] = useState<User | null>(null);
+  const [editUser, setEditUser] = useState<IUser | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -89,15 +91,33 @@ const Users: React.FC = () => {
     defaultValues: { name: "", phone: "", address: "", email: "" },
   });
 
-  useEffect(() => {
-    dispatch(listUsersFn({ page, perPage }));
-  }, [dispatch, page, perPage]);
+  const { users, loading, error, updateUserLoading, deleteUserLoading } =
+    useSelector((state: RootState) => state.userManagementSlice);
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) &&
-      (filterForm.watch("role") === "" || u.role === filterForm.watch("role"))
-  );
+  // Fetch list whenever page/perPage/filter/search changes
+  useEffect(() => {
+    dispatch(
+      getAllUsers({ page, perPage, role: filterForm.getValues("role"), search })
+    );
+  }, [dispatch, page, perPage, filterForm.watch("role"), search]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
+  // filtering/search handled on server ideally; here we still support client-side search fallback
+  const filteredUsers = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return users;
+    return users.filter(
+      (u) =>
+        (u.name || "").toLowerCase().includes(q) ||
+        (u.email || "").toLowerCase().includes(q) ||
+        (u.phone || "").toLowerCase().includes(q)
+    );
+  }, [users, search]);
 
   const startIndex = (page - 1) * perPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + perPage);
@@ -114,11 +134,11 @@ const Users: React.FC = () => {
     setSelectedIds((prev) =>
       allSelected
         ? prev.filter((id) => !pageIds.includes(id))
-        : [...new Set([...prev, ...pageIds])]
+        : Array.from(new Set([...prev, ...pageIds]))
     );
   };
 
-  const openEditDialog = (user: User) => {
+  const openEditDialog = (user: IUser) => {
     setEditUser(user);
     editForm.reset({
       name: user.name || "",
@@ -129,9 +149,16 @@ const Users: React.FC = () => {
     setEditDialogOpen(true);
   };
 
-  const handleEditSubmit = () => {
-    toast.success("User info updated (mock)");
-    setEditDialogOpen(false);
+  const handleEditSubmit = async (data: EditFormValues) => {
+    if (!editUser) return;
+    try {
+      await dispatch(updateUser({ userId: editUser.id, ...data })).unwrap();
+      toast.success("User updated successfully!");
+      setEditDialogOpen(false);
+      setEditUser(null);
+    } catch (err) {
+      toast.error(String(err));
+    }
   };
 
   const openDeleteDialog = (id: string) => {
@@ -139,21 +166,25 @@ const Users: React.FC = () => {
     setDeleteDialogOpen(true);
   };
 
-  const handleDelete = () => {
-    toast.success("User deleted (mock)");
-    setDeleteDialogOpen(false);
-    setDeleteUserId(null);
+  const handleDelete = async () => {
+    if (!deleteUserId) return;
+    try {
+      await dispatch(deleteUser({ userId: deleteUserId })).unwrap();
+      toast.success("User deleted successfully!");
+      setDeleteDialogOpen(false);
+      setDeleteUserId(null);
+      // remove selection if it was selected
+      setSelectedIds((prev) => prev.filter((i) => i !== deleteUserId));
+    } catch (err) {
+      toast.error(String(err));
+    }
   };
 
   const handleApplyFilter = () => {
     setPage(1);
     setFilterDialogOpen(false);
+    // getAllUsers will run from useEffect because filterForm.watch changed
   };
-
-  if (error) {
-    toast.error(error);
-    return null;
-  }
 
   if (loading) return <LoadingPages message="Loading users..." />;
 
@@ -161,6 +192,8 @@ const Users: React.FC = () => {
   const totalUsers = users.length;
   const activeUsers = users.filter((u) => u.isActive).length;
   const inactiveUsers = totalUsers - activeUsers;
+  // "online users" is app-specific; here show active users as proxy
+  const onlineUsers = activeUsers;
 
   return (
     <div className="w-full min-h-screen p-6 text-gray-900">
@@ -168,10 +201,9 @@ const Users: React.FC = () => {
         User Management
       </h1>
 
-      {/* Dashboard-style Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <Card className=" border  shadow-sm">
-          <CardContent className=" flex items-center justify-between p-6">
+        <Card className="border shadow-sm">
+          <CardContent className="flex items-center justify-between p-6">
             <div>
               <p className="text-sm dark:text-white font-medium text-gray-500">
                 Total Users
@@ -186,8 +218,8 @@ const Users: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className=" border  shadow-sm">
-          <CardContent className=" flex items-center justify-between p-6">
+        <Card className="border shadow-sm">
+          <CardContent className="flex items-center justify-between p-6">
             <div>
               <p className="text-sm dark:text-white font-medium text-gray-500">
                 Active Users
@@ -202,8 +234,8 @@ const Users: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className=" border  shadow-sm">
-          <CardContent className=" flex items-center justify-between p-6">
+        <Card className="border shadow-sm">
+          <CardContent className="flex items-center justify-between p-6">
             <div>
               <p className="text-sm dark:text-white font-medium text-gray-500">
                 Inactive Users
@@ -217,14 +249,15 @@ const Users: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        <Card className=" border  shadow-sm">
-          <CardContent className=" flex items-center justify-between p-6">
+
+        <Card className="border shadow-sm">
+          <CardContent className="flex items-center justify-between p-6">
             <div>
               <p className="text-sm dark:text-white font-medium text-gray-500">
                 Online Users
               </p>
               <p className="text-2xl font-bold dark:text-white text-gray-800">
-                {totalUsers - inactiveUsers - 3}
+                {onlineUsers}
               </p>
             </div>
             <div className="bg-red-500/10 p-3 rounded-full">
@@ -234,25 +267,30 @@ const Users: React.FC = () => {
         </Card>
       </div>
 
-      {/* Actions */}
       <div className="flex flex-col sm:flex-row sm:justify-between mb-4 gap-2 p-4 border rounded-md bg-white dark:bg-slate-900 dark:text-white">
         <div className="flex gap-2 flex-wrap">
           <Button
             variant="destructive"
             size="sm"
             disabled={selectedIds.length === 0}
-            onClick={() => toast.success("Selected users deleted (mock)")}
+            onClick={() => {
+              // bulk delete not implemented server-side in slice; show mock
+              toast.success("Selected users deleted (mock)");
+              // optional: actually call deleteUser for each selectedId if API supports it
+            }}
           >
             <Trash2 className="mr-2 h-4 w-4" /> Delete{" "}
             {selectedIds.length > 0 && `(${selectedIds.length})`}
           </Button>
+
           <Button
             variant="outline"
             size="sm"
-            onClick={() => dispatch(listUsersFn({ page, perPage }))}
+            onClick={() => dispatch(getAllUsers({ page, perPage }))}
           >
             <RefreshCw className="mr-2 h-4 w-4" /> Refresh
           </Button>
+
           <Button
             variant="outline"
             size="sm"
@@ -261,6 +299,7 @@ const Users: React.FC = () => {
             <Filter className="mr-2 h-4 w-4" /> Filter
           </Button>
         </div>
+
         <Input
           placeholder="Search users..."
           value={search}
@@ -269,8 +308,7 @@ const Users: React.FC = () => {
         />
       </div>
 
-      {/* Table */}
-      <Card className="">
+      <Card>
         <CardHeader>
           <CardTitle>All Users</CardTitle>
         </CardHeader>
@@ -280,9 +318,10 @@ const Users: React.FC = () => {
               <TableRow>
                 <TableHead>
                   <Checkbox
-                    checked={paginatedUsers.every((u) =>
-                      selectedIds.includes(u.id)
-                    )}
+                    checked={
+                      paginatedUsers.every((u) => selectedIds.includes(u.id)) &&
+                      paginatedUsers.length > 0
+                    }
                     onCheckedChange={selectAll}
                   />
                 </TableHead>
@@ -290,6 +329,7 @@ const Users: React.FC = () => {
                 <TableHead>Phone</TableHead>
                 <TableHead>Address</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -305,9 +345,12 @@ const Users: React.FC = () => {
                       />
                     </TableCell>
                     <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.phone}</TableCell>
+                    <TableCell>{user.phone || "-"}</TableCell>
                     <TableCell>{user.address || "-"}</TableCell>
                     <TableCell>{user.email || "-"}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{user.role || "USER"}</Badge>
+                    </TableCell>
                     <TableCell>
                       {user.isActive ? (
                         <span className="text-green-600 font-medium">
@@ -344,7 +387,7 @@ const Users: React.FC = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-4">
+                  <TableCell colSpan={8} className="text-center py-4">
                     No users found
                   </TableCell>
                 </TableRow>
@@ -352,9 +395,11 @@ const Users: React.FC = () => {
             </TableBody>
           </Table>
 
-          {/* Pagination */}
           <div className="flex justify-end items-center gap-2 mt-4 flex-wrap">
-            <Button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+            <Button
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
               Previous
             </Button>
             <span>
@@ -362,7 +407,7 @@ const Users: React.FC = () => {
             </span>
             <Button
               disabled={page === totalPages}
-              onClick={() => setPage((p) => p + 1)}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             >
               Next
             </Button>
@@ -386,13 +431,15 @@ const Users: React.FC = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All Roles</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="officer">Officer</SelectItem>
-                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="ADMIN">Admin</SelectItem>
+                      <SelectItem value="OFFICER">Officer</SelectItem>
+                      <SelectItem value="BOOKER">Booker</SelectItem>
+                      <SelectItem value="USER">User</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
+
               <div className="flex justify-end gap-2 mt-6">
                 <Button
                   variant="outline"
@@ -417,7 +464,10 @@ const Users: React.FC = () => {
             >
               <h2 className="text-xl font-bold mb-4">Edit User</h2>
               <div className="flex flex-col gap-4">
-                <Input placeholder="Name" {...editForm.register("name")} />
+                <Input
+                  placeholder="Name"
+                  {...editForm.register("name", { required: true })}
+                />
                 <Input placeholder="Phone" {...editForm.register("phone")} />
                 <Input
                   placeholder="Address"
@@ -432,7 +482,9 @@ const Users: React.FC = () => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Save</Button>
+                <Button type="submit" disabled={updateUserLoading}>
+                  {updateUserLoading ? "Saving..." : "Save"}
+                </Button>
               </div>
             </form>
           </div>
@@ -452,8 +504,11 @@ const Users: React.FC = () => {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete}>
-                Delete
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={deleteUserLoading}
+              >
+                {deleteUserLoading ? "Deleting..." : "Delete"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

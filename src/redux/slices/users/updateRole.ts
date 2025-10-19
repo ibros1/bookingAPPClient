@@ -23,7 +23,7 @@ export const updateRoleFn = createAsyncThunk(
       const token = appState.loginSlice.data?.token;
       const res = await axios.put(`${BASE_API_URL}/users/update-role`, data, {
         headers: {
-          Authorization: `BEARER ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 

@@ -27,6 +27,8 @@ import MessageDetailedPage from "./pages/admin/pages/adminMessages/getDetailedMe
 import CreateEmployee from "./pages/admin/pages/adminEmployees/createEmployee";
 
 import Users from "./pages/admin/pages/usersManagement/users";
+import CreateUser from "./pages/admin/pages/usersManagement/createUser";
+import RolesAndPermissions from "./pages/admin/pages/usersManagement/rolesAndPermissions";
 import ListAdminLogs from "./pages/admin/pages/AdminLogs/listLogs";
 import AdminLogout from "./pages/admin/pages/adminLogout/adminLogout";
 import MyBookings from "./pages/admin/pages/bookerBookings/myBookings";
@@ -139,6 +141,14 @@ const adminRoutes = {
     {
       path: "users",
       element: <Users />,
+    },
+    {
+      path: "users/create",
+      element: <CreateUser />,
+    },
+    {
+      path: "users/roles",
+      element: <RolesAndPermissions />,
     },
     {
       path: "/dashboard/admin/logout",

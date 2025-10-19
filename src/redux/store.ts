@@ -40,6 +40,7 @@ import { getOneMessageSlice } from "./slices/messages/getOneMessage";
 
 import { listUsersSlice } from "./slices/users/getAllUsers";
 import { updateRoleSlice } from "./slices/users/updateRole";
+import { userManagementSlice } from "./slices/userManagement/userManagement";
 import { listLogsSlice } from "./activity/ListActivity";
 import { listMyBookingsSlice } from "./slices/bookings/myBooking";
 import { getOneBookingDetailSlice } from "./slices/bookings/getDetailBooking";
@@ -53,6 +54,7 @@ export const store = configureStore({
     listBookersSlice: listBookersSlice.reducer,
     listUsersSlice: listUsersSlice.reducer,
     updateRoleSlice: updateRoleSlice.reducer,
+    userManagementSlice: userManagementSlice.reducer,
 
     // routes
     createRoutesSlice: createRoutesSlice.reducer,

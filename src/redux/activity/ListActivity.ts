@@ -29,7 +29,7 @@ export const listLogsFn = createAsyncThunk(
         },
         params: {
           page: data.page,
-          limit: data.perPage,
+          perPage: data.perPage,
         },
       });
 

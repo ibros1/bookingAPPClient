@@ -216,14 +216,14 @@ const ListAdminLogs: React.FC = () => {
                       </TableCell>
                       <TableCell className="flex items-center gap-2 text-gray-900 dark:text-gray-200">
                         <User className="w-4 h-4 text-gray-500" />
-                        {log.details?.creatorName || "—"}
+                        {log.user?.name || log.details?.creatorName || "—"}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
                           className="capitalize dark:border-gray-600"
                         >
-                          {log.details.creatorRole || "—"}
+                          {log.user?.role || log.details?.creatorRole || "—"}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium text-blue-600 dark:text-blue-400">
@@ -300,10 +300,12 @@ const ListAdminLogs: React.FC = () => {
             </DialogHeader>
             <div className="space-y-3 text-sm">
               <p>
-                <strong>User:</strong> {viewLog.details?.name}
+                <strong>User:</strong>{" "}
+                {viewLog.user?.name || viewLog.details?.name || "—"}
               </p>
               <p>
-                <strong>Role:</strong> {viewLog.details?.role}
+                <strong>Role:</strong>{" "}
+                {viewLog.user?.role || viewLog.details?.role || "—"}
               </p>
               <p>
                 <strong>Action:</strong> {viewLog.action.replaceAll("_", " ")}
