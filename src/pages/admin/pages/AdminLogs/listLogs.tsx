@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/redux/store";
+import { listLogsFn } from "@/redux/activity/ListActivity";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,31 +15,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+
 import {
   Loader2,
   Activity,
-  User,
+  User as UserIcon,
   MoreHorizontal,
   RefreshCw,
   Filter,
   FileBarChart,
 } from "lucide-react";
-import { listLogsFn } from "@/redux/activity/ListActivity";
+
+import type { ActivityLog } from "@/redux/types/logs";
 
 const ListAdminLogs: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -45,18 +50,19 @@ const ListAdminLogs: React.FC = () => {
   );
 
   const [page, setPage] = useState(1);
-  const perPage = 10;
   const [search, setSearch] = useState("");
   const [selectedAction, setSelectedAction] = useState("");
-  const [viewLog, setViewLog] = useState<any>(null);
+  const [viewLog, setViewLog] = useState<ActivityLog | null>(null);
+  const perPage = 10;
 
   // Fetch Logs
   useEffect(() => {
     dispatch(listLogsFn({ page, perPage }));
   }, [dispatch, page]);
 
+  // Pagination handlers
   const handleNext = () => {
-    if (page < data.totalPages) setPage((p) => p + 1);
+    if (page < (data?.totalPages ?? 1)) setPage((p) => p + 1);
   };
   const handlePrev = () => {
     if (page > 1) setPage((p) => p - 1);
@@ -65,23 +71,27 @@ const ListAdminLogs: React.FC = () => {
     dispatch(listLogsFn({ page, perPage }));
   };
 
-  // Filter Logic
-  const filteredLogs = data?.activityLogs?.filter((log) => {
-    const matchesSearch =
-      log.details?.message?.toLowerCase().includes(search.toLowerCase()) ||
-      log.action.toLowerCase().includes(search.toLowerCase());
-    const matchesAction = selectedAction ? log.action === selectedAction : true;
-    return matchesSearch && matchesAction;
-  });
+  // Filtered logs with proper typing
+  const filteredLogs = useMemo<ActivityLog[]>(() => {
+    if (!data?.activityLogs) return [];
+    return data.activityLogs.filter((log: any) => {
+      const actionMatch = selectedAction ? log.action === selectedAction : true;
+      const searchMatch =
+        log.details?.message?.toLowerCase().includes(search.toLowerCase()) ||
+        log.action.toLowerCase().includes(search.toLowerCase()) ||
+        log.user?.name.toLowerCase().includes(search.toLowerCase());
+      return actionMatch && searchMatch;
+    });
+  }, [data?.activityLogs, search, selectedAction]);
 
-  // Stats Summary
-  const totalLogs = data?.total || 0;
-  const bookingLogs = data?.activityLogs?.filter((l) =>
-    l.action.includes("BOOKING")
-  ).length;
-  const paymentLogs = data?.activityLogs?.filter((l) =>
-    l.action.includes("PAYMENT")
-  ).length;
+  // Stats
+  const totalLogs = data?.total ?? 0;
+  const bookingLogs =
+    data?.activityLogs?.filter((l: any) => l.action.includes("BOOKING"))
+      .length ?? 0;
+  const paymentLogs =
+    data?.activityLogs?.filter((l: any) => l.action.includes("PAYMENT"))
+      .length ?? 0;
 
   return (
     <div className="p-6 space-y-6">
@@ -94,21 +104,18 @@ const ListAdminLogs: React.FC = () => {
           </h2>
         </div>
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            className="dark:border-gray-700"
-          >
+          <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
           </Button>
+
+          {/* Filters */}
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
                 <Filter className="w-4 h-4 mr-2" /> Filters
               </Button>
             </DialogTrigger>
-            <DialogContent className="dark:bg-gray-900">
+            <DialogContent className="sm:max-w-md dark:bg-gray-900">
               <DialogHeader>
                 <DialogTitle>Filter Logs</DialogTitle>
               </DialogHeader>
@@ -126,17 +133,19 @@ const ListAdminLogs: React.FC = () => {
                   <option value="">All Actions</option>
                   <option value="BOOKING_CREATED">BOOKING_CREATED</option>
                   <option value="PAYMENT_COMPLETED">PAYMENT_COMPLETED</option>
+                  <option value="USER_ROLE_UPDATED">USER_ROLE_UPDATED</option>
                 </select>
               </div>
             </DialogContent>
           </Dialog>
+
           <Button variant="default" size="sm">
             <FileBarChart className="w-4 h-4 mr-2" /> Reports
           </Button>
         </div>
       </div>
 
-      {/* Stats Overview */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="dark:bg-gray-900 dark:border-gray-800">
           <CardHeader className="pb-2">
@@ -174,7 +183,7 @@ const ListAdminLogs: React.FC = () => {
         </Card>
       </div>
 
-      {/* Logs Table */}
+      {/* Table */}
       <Card className="shadow-sm border dark:border-gray-800 dark:bg-gray-900">
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-gray-800 dark:text-gray-200">
@@ -191,7 +200,7 @@ const ListAdminLogs: React.FC = () => {
             </div>
           ) : error ? (
             <div className="text-center text-red-500 py-4">{error}</div>
-          ) : filteredLogs?.length ? (
+          ) : filteredLogs.length ? (
             <div className="rounded-md border dark:border-gray-800 overflow-hidden">
               <Table>
                 <TableHeader className="bg-gray-50 dark:bg-gray-800">
@@ -215,22 +224,22 @@ const ListAdminLogs: React.FC = () => {
                         {(page - 1) * perPage + index + 1}
                       </TableCell>
                       <TableCell className="flex items-center gap-2 text-gray-900 dark:text-gray-200">
-                        <User className="w-4 h-4 text-gray-500" />
-                        {log.user?.name || log.details?.creatorName || "—"}
+                        <UserIcon className="w-4 h-4 text-gray-500" />
+                        {log.user?.name ?? log.details?.creatorName ?? "—"}
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
                           className="capitalize dark:border-gray-600"
                         >
-                          {log.user?.role || log.details?.creatorRole || "—"}
+                          {log.user?.role ?? log.details?.creatorRole ?? "—"}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-medium text-blue-600 dark:text-blue-400">
                         {log.action.replaceAll("_", " ")}
                       </TableCell>
                       <TableCell className="text-gray-600 dark:text-gray-400 max-w-xs truncate">
-                        {log.details?.message || ""}
+                        {log.details?.message ?? ""}
                       </TableCell>
                       <TableCell className="text-gray-500 dark:text-gray-400">
                         {new Date(log.createdAt).toLocaleString()}
@@ -267,14 +276,9 @@ const ListAdminLogs: React.FC = () => {
       </Card>
 
       {/* Pagination */}
-      {!loading && data?.totalPages > 1 && (
+      {!loading && data?.totalPages && data.totalPages > 1 && (
         <div className="flex justify-between items-center">
-          <Button
-            onClick={handlePrev}
-            disabled={page === 1}
-            variant="outline"
-            className="dark:border-gray-700"
-          >
+          <Button onClick={handlePrev} disabled={page === 1} variant="outline">
             Previous
           </Button>
           <span className="text-gray-600 dark:text-gray-400 text-sm">
@@ -284,28 +288,27 @@ const ListAdminLogs: React.FC = () => {
             onClick={handleNext}
             disabled={page === data.totalPages}
             variant="outline"
-            className="dark:border-gray-700"
           >
             Next
           </Button>
         </div>
       )}
 
-      {/* View Dialog */}
+      {/* View Log Dialog */}
       {viewLog && (
         <Dialog open={!!viewLog} onOpenChange={() => setViewLog(null)}>
-          <DialogContent className="dark:bg-gray-900">
+          <DialogContent className="sm:max-w-lg dark:bg-gray-900">
             <DialogHeader>
               <DialogTitle>Log Details</DialogTitle>
             </DialogHeader>
-            <div className="space-y-3 text-sm">
+            <div className="space-y-3 text-sm text-gray-800 dark:text-gray-200">
               <p>
                 <strong>User:</strong>{" "}
-                {viewLog.user?.name || viewLog.details?.name || "—"}
+                {viewLog.user?.name ?? viewLog.details?.creatorName ?? "—"}
               </p>
               <p>
                 <strong>Role:</strong>{" "}
-                {viewLog.user?.role || viewLog.details?.role || "—"}
+                {viewLog.user?.role ?? viewLog.details?.creatorRole ?? "—"}
               </p>
               <p>
                 <strong>Action:</strong> {viewLog.action.replaceAll("_", " ")}
