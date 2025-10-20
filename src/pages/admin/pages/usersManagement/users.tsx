@@ -61,6 +61,8 @@ import {
   updateUser,
 } from "@/redux/slices/userManagement/userManagement";
 import type { AppDispatch, RootState } from "@/redux/store";
+import { listAddressFn } from "@/redux/slices/address/listAddress";
+import type { FormikValues } from "formik";
 
 interface FilterFormValues {
   role: string;
@@ -85,6 +87,9 @@ const Users: React.FC = () => {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const { control } = useForm<FormikValues>({
+    defaultValues: { name: "", addressId: "", bookerId: "" },
+  });
 
   const filterForm = useForm<FilterFormValues>({ defaultValues: { role: "" } });
   const editForm = useForm<EditFormValues>({
@@ -93,6 +98,11 @@ const Users: React.FC = () => {
 
   const { users, loading, error, updateUserLoading, deleteUserLoading } =
     useSelector((state: RootState) => state.userManagementSlice);
+
+  const addressState = useSelector(
+    (state: RootState) => state.listAddressSlice
+  );
+  const addresses = addressState?.data?.address || [];
 
   // Fetch list whenever page/perPage/filter/search changes
   useEffect(() => {
@@ -139,6 +149,7 @@ const Users: React.FC = () => {
   };
 
   const openEditDialog = (user: IUser) => {
+    dispatch(listAddressFn({ page: 1, perPage: 1000 }));
     setEditUser(user);
     editForm.reset({
       name: user.name || "",
@@ -416,29 +427,42 @@ const Users: React.FC = () => {
       </Card>
 
       {/* Filter Dialog */}
+      {/* Filter Dialog */}
       {filterDialogOpen && (
         <FormProvider {...filterForm}>
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-            <form className="bg-white p-6 rounded-md w-full max-w-md shadow-lg">
+            <form
+              onSubmit={filterForm.handleSubmit((data) => {
+                const role = data.role === "all" ? "" : data.role; // ✅ Convert "all" back to empty string
+                dispatch(getAllUsers({ page: 1, perPage, role, search }));
+                setFilterDialogOpen(false);
+              })}
+              className="bg-white dark:bg-gray-900 dark:text-white p-6 rounded-md w-full max-w-md shadow-lg"
+            >
               <h2 className="text-xl font-bold mb-4">Filter Users</h2>
-              <Controller
-                control={filterForm.control}
-                name="role"
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Roles</SelectItem>
-                      <SelectItem value="ADMIN">Admin</SelectItem>
-                      <SelectItem value="OFFICER">Officer</SelectItem>
-                      <SelectItem value="BOOKER">Booker</SelectItem>
-                      <SelectItem value="USER">User</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
+
+              <div className="flex flex-col gap-4">
+                {/* Role Select */}
+                <Controller
+                  control={filterForm.control}
+                  name="role"
+                  defaultValue="all"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                        <SelectItem value="OFFICER">Officer</SelectItem>
+                        <SelectItem value="BOOKER">Booker</SelectItem>
+                        <SelectItem value="USER">User</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
 
               <div className="flex justify-end gap-2 mt-6">
                 <Button
@@ -447,7 +471,7 @@ const Users: React.FC = () => {
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleApplyFilter}>Apply</Button>
+                <Button type="submit">Apply</Button>
               </div>
             </form>
           </div>
@@ -455,26 +479,57 @@ const Users: React.FC = () => {
       )}
 
       {/* Edit Dialog */}
+      {/* Edit Dialog */}
       {editDialogOpen && editUser && (
         <FormProvider {...editForm}>
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
             <form
               onSubmit={editForm.handleSubmit(handleEditSubmit)}
-              className="bg-white p-6 rounded-md w-full max-w-md shadow-lg"
+              className="bg-white dark:bg-gray-900 dark:text-white p-6 rounded-md w-full max-w-md shadow-lg"
             >
               <h2 className="text-xl font-bold mb-4">Edit User</h2>
+
               <div className="flex flex-col gap-4">
                 <Input
                   placeholder="Name"
                   {...editForm.register("name", { required: true })}
                 />
                 <Input placeholder="Phone" {...editForm.register("phone")} />
-                <Input
-                  placeholder="Address"
-                  {...editForm.register("address")}
+
+                {/* ✅ Fixed Address Select */}
+                <Controller
+                  control={editForm.control}
+                  name="address"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select address" />
+                      </SelectTrigger>
+
+                      {/* ✅ Fixed SelectContent */}
+                      <SelectContent>
+                        {addresses.length > 0 ? (
+                          addresses.map((a) => (
+                            <SelectItem key={a.id} value={a.address}>
+                              {a.address || "Unnamed address"}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="no-address" disabled>
+                            No addresses found
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
+
                 <Input placeholder="Email" {...editForm.register("email")} />
               </div>
+
               <div className="flex justify-end gap-2 mt-6">
                 <Button
                   variant="outline"
