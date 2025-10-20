@@ -54,6 +54,7 @@ import { useDispatch, useSelector } from "react-redux";
 import LoadingPages from "@/components/loading";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { listAddressFn } from "@/redux/slices/address/listAddress";
 import type { User as IUser } from "@/redux/slices/userManagement/userManagement";
 import {
   deleteUser,
@@ -61,8 +62,6 @@ import {
   updateUser,
 } from "@/redux/slices/userManagement/userManagement";
 import type { AppDispatch, RootState } from "@/redux/store";
-import { listAddressFn } from "@/redux/slices/address/listAddress";
-import type { FormikValues } from "formik";
 
 interface FilterFormValues {
   role: string;
@@ -87,9 +86,6 @@ const Users: React.FC = () => {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-  const { control } = useForm<FormikValues>({
-    defaultValues: { name: "", addressId: "", bookerId: "" },
-  });
 
   const filterForm = useForm<FilterFormValues>({ defaultValues: { role: "" } });
   const editForm = useForm<EditFormValues>({
@@ -191,11 +187,11 @@ const Users: React.FC = () => {
     }
   };
 
-  const handleApplyFilter = () => {
-    setPage(1);
-    setFilterDialogOpen(false);
-    // getAllUsers will run from useEffect because filterForm.watch changed
-  };
+  // const handleApplyFilter = () => {
+  //   setPage(1);
+  //   setFilterDialogOpen(false);
+  //   // getAllUsers will run from useEffect because filterForm.watch changed
+  // };
 
   if (loading) return <LoadingPages message="Loading users..." />;
 
