@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
+import Footer from "@/components/footer";
 import LoadingPages from "@/components/loading";
 import type { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 
-import AdminHeader from "../components/layout/header";
 import SideBar from "../components/layout/sideBar";
 import UnablePage from "./unable";
+import AdminHeader from "../components/layout/header";
 
 const AdminRouter = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,7 +36,7 @@ const AdminRouter = () => {
   }
 
   return (
-    <div className="flex h-screen dark:bg-slate-950 text-black dark:text-white transition-colors duration-300">
+    <div className="bg-white text-black dark:bg-slate-950 dark:text-white transition-colors duration-300">
       {/* Sidebar */}
 
       <SideBar
@@ -44,18 +45,19 @@ const AdminRouter = () => {
       />
 
       {/* Main area */}
-      <div className="w-full ml-0 lg:ml-80  overflow-auto">
+      <div className="ml-0 lg:ml-80  overflow-auto">
         {/* Header */}
-        <div className="w-full   top-0 left-0">
+        <div className="   top-0 left-0">
           <AdminHeader toggleSidebar={toggleSidebar} />
         </div>
 
         {/* Scrollable content */}
 
-        <div className="flex-1 min-h-screen flex flex-col ">
+        <div className={`flex-1 min-h-screen flex flex-col `}>
           <main className="flex-1 overflow-y-auto dark:bg-[#091025]">
             <Outlet />
           </main>
+          <Footer />
         </div>
       </div>
     </div>
