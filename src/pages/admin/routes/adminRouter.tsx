@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
-import Footer from "@/components/footer";
 import LoadingPages from "@/components/loading";
 import type { RootState } from "@/redux/store";
 import { useSelector } from "react-redux";
 
+import AdminHeader from "../components/layout/header";
 import SideBar from "../components/layout/sideBar";
 import UnablePage from "./unable";
-import AdminHeader from "../components/layout/header";
 
 const AdminRouter = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,11 +52,10 @@ const AdminRouter = () => {
 
         {/* Scrollable content */}
 
-        <div className="flex-1 min-h-screen flex flex-col">
+        <div className="flex-1 min-h-screen flex flex-col ">
           <main className="flex-1 overflow-y-auto dark:bg-[#091025]">
             <Outlet />
           </main>
-          <Footer />
         </div>
       </div>
     </div>
